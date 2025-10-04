@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .module-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .ws-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #dc3545;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .ws-indicator.connected {
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .data-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>🏥 Hospital Management System</h1>
+            <div class="d-flex align-items-center">
+                <span id="currentUser" class="me-3"></span>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+                <div class="ms-3">
+                    <div class="ws-indicator" id="wsIndicator"></div>
+                    <span id="wsStatus" class="small">Disconnected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginSection" class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="module-card">
+                    <h3 class="text-center mb-4">Login</h3>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" value="admin" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" value="admin123" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div id="modulesSection" class="row" style="display: none;">
+            <!-- Modules will be dynamically loaded here -->
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="row" style="display: none;">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Total Patients</h5>
+                    <h2 id="statPatients">0</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Today's Appointments</h5>
+                    <h2 id="statAppointments">0</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Bed Occupancy</h5>
+                    <h2 id="statOccupancy">0%</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Monthly Revenue</h5>
+                    <h2 id="statRevenue">₦0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modals Container -->
+    <div id="modalContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5801' 
+            : 'https://hms-backend-api-morphvm-mkofwuzh.http.cloud.morph.so';
+        
+        let authToken = localStorage.getItem('hms_token');
+        let currentUser = null;
+        let ws = null;
+
+        // Module definitions with full functionality
+        const modules = [
+            {
+                icon: '📋',
+                title: 'Electronic Medical Records',
+                description: 'Complete patient medical history, diagnoses, prescriptions, and lab results management.',
+                actions: [
+                    { label: 'New Patient', handler: showNewPatientModal, primary: true },
+                    { label: 'View Patients', handler: showPatientsListModal },
+                    { label: 'Medical Records', handler: showMedicalRecordsModal }
+                ]
+            },
+            {
+                icon: '💰',
+                title: 'Billing & Revenue',
+                description: 'Invoice generation, payment processing, insurance claims, and revenue tracking.',
+                actions: [
+                    { label: 'Create Invoice', handler: showCreateInvoiceModal, primary: true },
+                    { label: 'View Invoices', handler: showInvoicesListModal },
+                    { label: 'Revenue Summary', handler: showRevenueSummaryModal }
+                ]
+            },
+            {
+                icon: '📦',
+                title: 'Inventory Management',
+                description: 'Track medications, medical supplies, equipment with automatic reorder alerts.',
+                actions: [
+                    { label: 'Add Stock', handler: showAddStockModal, primary: true },
+                    { label: 'View Inventory', handler: showInventoryListModal },
+                    { label: 'Low Stock Alerts', handler: showLowStockModal }
+                ]
+            },
+            {
+                icon: '👥',
+                title: 'Staff Management',
+                description: 'Staff scheduling, attendance tracking, payroll processing, and performance metrics.',
+                actions: [
+                    { label: 'Add Staff', handler: showAddStaffModal, primary: true },
+                    { label: 'View Staff', handler: showStaffListModal },
+                    { label: 'Schedules', handler: showSchedulesModal }
+                ]
+            },
+            {
+                icon: '🛏️',
+                title: 'Bed Management',
+                description: 'Real-time bed availability, admissions, discharges, and ward occupancy tracking.',
+                actions: [
+                    { label: 'New Admission', handler: showNewAdmissionModal, primary: true },
+                    { label: 'Available Beds', handler: showBedsListModal },
+                    { label: 'Discharge Patient', handler: showDischargeModal }
+                ]
+            },
+            {
+                icon: '📊',
+                title: 'Analytics Dashboard',
+                description: 'Real-time metrics, occupancy trends, revenue analytics, and performance KPIs.',
+                actions: [
+                    { label: 'View Dashboard', handler: showAnalyticsDashboard, primary: true },
+                    { label: 'Export Reports', handler: showExportReportsModal },
+                    { label: 'Trends Analysis', handler: showTrendsModal }
+                ]
+            }
+        ];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (authToken) {
+                showMainInterface();
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+
+        // Authentication
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) throw new Error('Login failed');
+                
+                const data = await response.json();
+                authToken = data.token;
+                currentUser = data.user;
+                localStorage.setItem('hms_token', authToken);
+                
+                showMainInterface();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('hms_token');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('modulesSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
+            if (ws) ws.close();
+        }
+
+        function showMainInterface() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('modulesSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('currentUser').textContent = `Welcome, ${currentUser?.username || 'User'}`;
+            
+            renderModules();
+            loadDashboardStats();
+            connectWebSocket();
+        }
+
+        function renderModules() {
+            const container = document.getElementById('modulesSection');
+            container.innerHTML = modules.map(module => `
+                <div class="col-md-4">
+                    <div class="module-card">
+                        <div class="module-icon">${module.icon}</div>
+                        <h4>${module.title}</h4>
+                        <p class="text-muted">${module.description}</p>
+                        <div class="d-grid gap-2">
+                            ${module.actions.map(action => `
+                                <button class="btn ${action.primary ? 'btn-primary' : 'btn-outline-primary'}" 
+                                        onclick="${action.handler.name}()">
+                                    ${action.label}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            const wsUrl = API_BASE.replace('http', 'ws');
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                document.getElementById('wsIndicator').classList.add('connected');
+                document.getElementById('wsStatus').textContent = 'Connected';
+            };
+
+            ws.onclose = () => {
+                document.getElementById('wsIndicator').classList.remove('connected');
+                document.getElementById('wsStatus').textContent = 'Disconnected';
+                setTimeout(connectWebSocket, 5000);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleRealtimeUpdate(data);
+            };
+        }
+
+        function handleRealtimeUpdate(data) {
+            // Refresh relevant data based on update type
+            if (data.type === 'patient_created' || data.type === 'invoice_created') {
+                loadDashboardStats();
+            }
+        }
+
+        // Dashboard
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load dashboard');
+                
+                const data = await response.json();
+                document.getElementById('statPatients').textContent = data.totalPatients;
+                document.getElementById('statAppointments').textContent = data.todayAppointments;
+                document.getElementById('statOccupancy').textContent = `${data.bedOccupancy}%`;
+                document.getElementById('statRevenue').textContent = `₦${data.monthlyRevenue.toLocaleString()}`;
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        // API Helper
+        async function apiRequest(endpoint, options = {}) {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.statusText}`);
+            }
+
+            return response.json();
+        }
+
+        // ==================== PATIENT MANAGEMENT ====================
+        async function showNewPatientModal() {
+            showModal('New Patient Registration', `
+                <form id="newPatientForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" name="date_of_birth">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-control" name="gender">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Blood Group</label>
+                            <select class="form-control" name="blood_group">
+                                <option value="">Select</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Emergency Contact</label>
+                        <input type="text" class="form-control" name="emergency_contact" 
+                               placeholder="Name and Phone">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register Patient</button>
+                </form>
+            `);
+
+            document.getElementById('newPatientForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                if (data.emergency_contact) {
+                    data.emergency_contact = { info: data.emergency_contact };
+                }
+
+                try {
+                    await apiRequest('/api/patients', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Patient registered successfully!');
+                    loadDashboardStats();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function showPatientsListModal() {
+            const patients = await apiRequest('/api/patients');
+            
+            showModal('Patient List', `
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="searchPatient" 
+                           placeholder="Search by name, email or phone...">
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Blood Group</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            ${patients.patients.map(p => `
+                                <tr>
+                                    <td>${p.name}</td>
+                                    <td>${p.phone || '-'}</td>
+                                    <td>${p.blood_group || '-'}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="viewPatientDetails('${p.id}')">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+
+            document.getElementById('searchPatient').addEventListener('input', async (e) => {
+                const search = e.target.value;
+                const filtered = await apiRequest(`/api/patients?search=${search}`);
+                document.getElementById('patientsTableBody').innerHTML = filtered.patients.map(p => `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>${p.phone || '-'}</td>
+                        <td>${p.blood_group || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" 
+                                    onclick="viewPatientDetails('${p.id}')">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+        }
+
+        async function viewPatientDetails(patientId) {
+            const patient = await apiRequest(`/api/patients/${patientId}`);
+            
+            showModal('Patient Details', `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> ${patient.name}</p>
+                        <p><strong>Date of Birth:</strong> ${patient.date_of_birth || '-'}</p>
+                        <p><strong>Gender:</strong> ${patient.gender || '-'}</p>
+                        <p><strong>Blood Group:</strong> ${patient.blood_group || '-'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Phone:</strong> ${patient.phone || '-'}</p>
+                        <p><strong>Email:</strong> ${patient.email || '-'}</p>
+                        <p><strong>Address:</strong> ${patient.address || '-'}</p>
+                        <p><strong>Emergency Contact:</strong> ${patient.emergency_contact ? JSON.parse(patient.emergency_contact).info : '-'}</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="showEditPatientModal('${patientId}')">
+                        Edit Details
+                    </button>
+                    <button class="btn btn-info" onclick="showPatientMedicalHistory('${patientId}')">
+                        Medical History
+                    </button>
+                </div>
+            `);
+        }
+
+        async function showMedicalRecordsModal() {
+            const records = await apiRequest('/api/medical-records');
+            
+            showModal('Medical Records', `
+                <button class="btn btn-primary mb-3" onclick="showNewMedicalRecordModal()">
+                    Add New Record
+                </button>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Visit Date</th>
+                                <th>Diagnosis</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${records.records.map(r => `
+                                <tr>
+                                    <td>${r.patient_name}</td>
+                                    <td>${r.doctor_name || '-'}</td>
+                                    <td>${new Date(r.visit_date).toLocaleDateString()}</td>
+                                    <td>${r.diagnosis || '-'}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="viewMedicalRecord('${r.id}')">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        // ==================== BILLING MANAGEMENT ====================
+        async function showCreateInvoiceModal() {
+            const patients = await apiRequest('/api/patients');
+            
+            showModal('Create Invoice', `
+                <form id="createInvoiceForm">
+                    <div class="mb-3">
+                        <label class="form-label">Patient *</label>
+                        <select class="form-control" name="patient_id" required>
+                            <option value="">Select Patient</option>
+                            ${patients.patients.map(p => `
+                                <option value="${p.id}">${p.name}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-control" name="payment_method">
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="mobile_money">Mobile Money</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Items</label>
+                        <div id="invoiceItems">
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Description" name="item_desc[]">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" class="form-control" placeholder="Amount" name="item_amount[]">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" class="form-control" placeholder="Qty" name="item_qty[]" value="1">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addInvoiceItem()">
+                            Add Item
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Invoice</button>
+                </form>
+            `);
+
+            document.getElementById('createInvoiceForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                
+                const items = [];
+                const descriptions = formData.getAll('item_desc[]');
+                const amounts = formData.getAll('item_amount[]');
+                const quantities = formData.getAll('item_qty[]');
+                
+                for (let i = 0; i < descriptions.length; i++) {
+                    if (descriptions[i] && amounts[i]) {
+                        items.push({
+                            description: descriptions[i],
+                            amount: parseFloat(amounts[i]),
+                            quantity: parseInt(quantities[i]) || 1
+                        });
+                    }
+                }
+
+                const data = {
+                    patient_id: formData.get('patient_id'),
+                    payment_method: formData.get('payment_method'),
+                    items
+                };
+
+                try {
+                    await apiRequest('/api/billing/invoices', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Invoice created successfully!');
+                    loadDashboardStats();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        function addInvoiceItem() {
+            const container = document.getElementById('invoiceItems');
+            const itemRow = document.createElement('div');
+            itemRow.className = 'row mb-2';
+            itemRow.innerHTML = `
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Description" name="item_desc[]">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control" placeholder="Amount" name="item_amount[]">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control" placeholder="Qty" name="item_qty[]" value="1">
+                </div>
+            `;
+            container.appendChild(itemRow);
+        }
+
+        async function showInvoicesListModal() {
+            const invoices = await apiRequest('/api/billing/invoices');
+            
+            showModal('Invoices', `
+                <div class="mb-3">
+                    <select class="form-control" id="filterInvoiceStatus">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Patient</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesTableBody">
+                            ${invoices.invoices.map(inv => `
+                                <tr>
+                                    <td>${inv.invoice_number}</td>
+                                    <td>${inv.patient_name}</td>
+                                    <td>₦${inv.total}</td>
+                                    <td>
+                                        <span class="badge ${inv.status === 'paid' ? 'bg-success' : 'bg-warning'}">
+                                            ${inv.status}
+                                        </span>
+                                    </td>
+                                    <td>${new Date(inv.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        ${inv.status === 'pending' ? `
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="processPayment('${inv.id}')">
+                                                Pay
+                                            </button>
+                                        ` : ''}
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="viewInvoiceDetails('${inv.id}')">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+
+            document.getElementById('filterInvoiceStatus').addEventListener('change', async (e) => {
+                const status = e.target.value;
+                const url = status ? `/api/billing/invoices?status=${status}` : '/api/billing/invoices';
+                const filtered = await apiRequest(url);
+                
+                document.getElementById('invoicesTableBody').innerHTML = filtered.invoices.map(inv => `
+                    <tr>
+                        <td>${inv.invoice_number}</td>
+                        <td>${inv.patient_name}</td>
+                        <td>₦${inv.total}</td>
+                        <td>
+                            <span class="badge ${inv.status === 'paid' ? 'bg-success' : 'bg-warning'}">
+                                ${inv.status}
+                            </span>
+                        </td>
+                        <td>${new Date(inv.created_at).toLocaleDateString()}</td>
+                        <td>
+                            ${inv.status === 'pending' ? `
+                                <button class="btn btn-sm btn-success" 
+                                        onclick="processPayment('${inv.id}')">
+                                    Pay
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-info" 
+                                    onclick="viewInvoiceDetails('${inv.id}')">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+        }
+
+        async function processPayment(invoiceId) {
+            const amount = prompt('Enter payment amount:');
+            if (!amount) return;
+
+            try {
+                await apiRequest(`/api/billing/invoices/${invoiceId}/payment`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        amount_paid: parseFloat(amount),
+                        payment_date: new Date().toISOString().split('T')[0],
+                        payment_reference: `PAY-${Date.now()}`
+                    })
+                });
+                alert('Payment processed successfully!');
+                showInvoicesListModal();
+                loadDashboardStats();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function showRevenueSummaryModal() {
+            const summary = await apiRequest('/api/billing/revenue-summary');
+            
+            showModal('Revenue Summary', `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="stat-card">
+                            <h6>Total Revenue</h6>
+                            <h3>₦${(summary.total_revenue || 0).toLocaleString()}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stat-card">
+                            <h6>Pending Amount</h6>
+                            <h3>₦${(summary.pending_amount || 0).toLocaleString()}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <p><strong>Total Invoices:</strong> ${summary.total_invoices}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Paid Invoices:</strong> ${summary.paid_invoices}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Pending Invoices:</strong> ${summary.pending_invoices}</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        // ==================== INVENTORY MANAGEMENT ====================
+        async function showAddStockModal() {
+            showModal('Add Stock Item', `
+                <form id="addStockForm">
+                    <div class="mb-3">
+                        <label class="form-label">Item Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-control" name="category">
+                                <option value="Medicine">Medicine</option>
+                                <option value="Supplies">Supplies</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Consumables">Consumables</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" class="form-control" name="unit" placeholder="e.g., Tablets, Boxes">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Quantity *</label>
+                            <input type="number" class="form-control" name="quantity" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unit Price</label>
+                            <input type="number" step="0.01" class="form-control" name="unit_price">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reorder Level</label>
+                        <input type="number" class="form-control" name="reorder_level" value="10">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Item</button>
+                </form>
+            `);
+
+            document.getElementById('addStockForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    await apiRequest('/api/inventory', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Stock item added successfully!');
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function showInventoryListModal() {
+            const inventory = await apiRequest('/api/inventory');
+            
+            showModal('Inventory Management', `
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="showAddStockModal()">Add New Item</button>
+                    <button class="btn btn-warning" onclick="showLowStockModal()">Low Stock Alerts</button>
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Reorder Level</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${inventory.items.map(item => `
+                                <tr class="${item.quantity <= item.reorder_level ? 'table-warning' : ''}">
+                                    <td>${item.name}</td>
+                                    <td>${item.category || '-'}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.unit || '-'}</td>
+                                    <td>${item.reorder_level}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success" 
+                                                onclick="updateStock('${item.id}', 'add')">
+                                            +
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                                onclick="updateStock('${item.id}', 'remove')">
+                                            -
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        async function updateStock(itemId, action) {
+            const quantity = prompt(`Enter quantity to ${action}:`);
+            if (!quantity) return;
+
+            try {
+                await apiRequest(`/api/inventory/${itemId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ quantity: parseInt(quantity), action })
+                });
+                alert('Stock updated successfully!');
+                showInventoryListModal();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function showLowStockModal() {
+            const lowStock = await apiRequest('/api/inventory/low-stock');
+            
+            showModal('Low Stock Alerts', `
+                <div class="alert alert-warning">
+                    <strong>⚠️ ${lowStock.length} items are low on stock!</strong>
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Current Stock</th>
+                                <th>Reorder Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lowStock.map(item => `
+                                <tr class="table-warning">
+                                    <td>${item.name}</td>
+                                    <td><strong>${item.quantity}</strong></td>
+                                    <td>${item.reorder_level}</td>
+                                    <td>
+                                        <span class="badge bg-danger">Low Stock</span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        // ==================== STAFF MANAGEMENT ====================
+        async function showAddStaffModal() {
+            showModal('Add Staff Member', `
+                <form id="addStaffForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-control" name="role">
+                                <option value="Doctor">Doctor</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="Technician">Technician</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Support">Support</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department</label>
+                            <select class="form-control" name="department">
+                                <option value="General Medicine">General Medicine</option>
+                                <option value="Surgery">Surgery</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="ICU">ICU</option>
+                                <option value="Laboratory">Laboratory</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Qualification</label>
+                        <input type="text" class="form-control" name="qualification">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Shift Timing</label>
+                        <select class="form-control" name="shift_timing">
+                            <option value="Morning">Morning (6 AM - 2 PM)</option>
+                            <option value="Afternoon">Afternoon (2 PM - 10 PM)</option>
+                            <option value="Night">Night (10 PM - 6 AM)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Staff</button>
+                </form>
+            `);
+
+            document.getElementById('addStaffForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    await apiRequest('/api/staff', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Staff member added successfully!');
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function showStaffListModal() {
+            const staff = await apiRequest('/api/staff');
+            
+            showModal('Staff Directory', `
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="showAddStaffModal()">Add Staff</button>
+                    <select class="form-control mt-2" id="filterDepartment">
+                        <option value="">All Departments</option>
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Surgery">Surgery</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="ICU">ICU</option>
+                    </select>
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Phone</th>
+                                <th>Shift</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            ${staff.staff.map(s => `
+                                <tr>
+                                    <td>${s.name}</td>
+                                    <td>${s.role}</td>
+                                    <td>${s.department}</td>
+                                    <td>${s.phone || '-'}</td>
+                                    <td>${s.shift_timing || '-'}</td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+
+            document.getElementById('filterDepartment').addEventListener('change', async (e) => {
+                const dept = e.target.value;
+                const url = dept ? `/api/staff?department=${dept}` : '/api/staff';
+                const filtered = await apiRequest(url);
+                
+                document.getElementById('staffTableBody').innerHTML = filtered.staff.map(s => `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${s.role}</td>
+                        <td>${s.department}</td>
+                        <td>${s.phone || '-'}</td>
+                        <td>${s.shift_timing || '-'}</td>
+                        <td>
+                            <span class="badge bg-success">Active</span>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+        }
+
+        async function showSchedulesModal() {
+            const staff = await apiRequest('/api/staff');
+            const schedules = await apiRequest('/api/staff/schedules');
+            
+            showModal('Staff Schedules', `
+                <form id="addScheduleForm" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select class="form-control" name="staff_id" required>
+                                <option value="">Select Staff</option>
+                                ${staff.staff.map(s => `
+                                    <option value="${s.id}">${s.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" name="schedule_date" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="time" class="form-control" name="shift_start" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="time" class="form-control" name="shift_end" required>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Staff</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Shift Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${schedules.map(s => `
+                                <tr>
+                                    <td>${s.staff_name}</td>
+                                    <td>${s.department}</td>
+                                    <td>${new Date(s.schedule_date).toLocaleDateString()}</td>
+                                    <td>${s.shift_start} - ${s.shift_end}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+
+            document.getElementById('addScheduleForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.duty_type = 'Regular';
+
+                try {
+                    await apiRequest('/api/staff/schedules', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    alert('Schedule added successfully!');
+                    showSchedulesModal();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        // ==================== BED MANAGEMENT ====================
+        async function showNewAdmissionModal() {
+            const patients = await apiRequest('/api/patients');
+            const beds = await apiRequest('/api/beds?status=available');
+            
+            showModal('New Admission', `
+                <form id="newAdmissionForm">
+                    <div class="mb-3">
+                        <label class="form-label">Patient *</label>
+                        <select class="form-control" name="patient_id" required>
+                            <option value="">Select Patient</option>
+                            ${patients.patients.map(p => `
+                                <option value="${p.id}">${p.name}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Available Bed *</label>
+                        <select class="form-control" name="bed_id" required>
+                            <option value="">Select Bed</option>
+                            ${beds.beds.map(b => `
+                                <option value="${b.id}">${b.bed_number} - ${b.ward}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Admission Date</label>
+                            <input type="date" class="form-control" name="admission_date" 
+                                   value="${new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expected Discharge</label>
+                            <input type="date" class="form-control" name="expected_discharge">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Admit Patient</button>
+                </form>
+            `);
+
+            document.getElementById('newAdmissionForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    await apiRequest('/api/beds/admission', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Patient admitted successfully!');
+                    loadDashboardStats();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function showBedsListModal() {
+            const beds = await apiRequest('/api/beds');
+            const occupancy = await apiRequest('/api/beds/occupancy');
+            
+            showModal('Bed Management', `
+                <div class="mb-3">
+                    <div class="row">
+                        ${occupancy.map(ward => `
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h6>${ward.ward}</h6>
+                                    <p>Occupancy: ${ward.occupancy_rate}%</p>
+                                    <small>${ward.occupied}/${ward.total_beds} beds</small>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Bed Number</th>
+                                <th>Ward</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Patient</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${beds.beds.map(bed => `
+                                <tr>
+                                    <td>${bed.bed_number}</td>
+                                    <td>${bed.ward}</td>
+                                    <td>${bed.type || 'General'}</td>
+                                    <td>
+                                        <span class="badge ${bed.status === 'available' ? 'bg-success' : 'bg-danger'}">
+                                            ${bed.status}
+                                        </span>
+                                    </td>
+                                    <td>${bed.patient_id ? 'Occupied' : '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        async function showDischargeModal() {
+            const occupiedBeds = await apiRequest('/api/beds?status=occupied');
+            
+            showModal('Discharge Patient', `
+                <form id="dischargeForm">
+                    <div class="mb-3">
+                        <label class="form-label">Select Bed *</label>
+                        <select class="form-control" name="bed_id" required>
+                            <option value="">Select Occupied Bed</option>
+                            ${occupiedBeds.beds.map(b => `
+                                <option value="${b.id}">${b.bed_number} - ${b.ward}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Discharge Date</label>
+                        <input type="date" class="form-control" name="discharge_date" 
+                               value="${new Date().toISOString().split('T')[0]}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Discharge Notes</label>
+                        <textarea class="form-control" name="discharge_notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Discharge Patient</button>
+                </form>
+            `);
+
+            document.getElementById('dischargeForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    await apiRequest('/api/beds/discharge', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Patient discharged successfully!');
+                    loadDashboardStats();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        // ==================== ANALYTICS ====================
+        async function showAnalyticsDashboard() {
+            const dashboard = await apiRequest('/api/analytics/dashboard');
+            const trends = await apiRequest('/api/analytics/trends?period=7days');
+            
+            showModal('Analytics Dashboard', `
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h6>Total Patients</h6>
+                            <h3>${dashboard.totalPatients}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h6>Bed Occupancy</h6>
+                            <h3>${dashboard.bedOccupancy}%</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h6>Monthly Revenue</h6>
+                            <h3>₦${dashboard.monthlyRevenue.toLocaleString()}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h6>Active Staff</h6>
+                            <h3>${dashboard.activeStaff}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="showExportReportsModal()">
+                        Export Reports
+                    </button>
+                </div>
+            `, 'modal-lg');
+
+            // Draw chart
+            setTimeout(() => {
+                const ctx = document.getElementById('trendsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: trends.patients.map(d => new Date(d.date).toLocaleDateString()),
+                        datasets: [{
+                            label: 'New Patients',
+                            data: trends.patients.map(d => d.count),
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }, 100);
+        }
+
+        async function showExportReportsModal() {
+            showModal('Export Reports', `
+                <form id="exportForm">
+                    <div class="mb-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-control" name="type" required>
+                            <option value="patients">Patients Report</option>
+                            <option value="revenue">Revenue Report</option>
+                            <option value="inventory">Inventory Report</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" name="end_date" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Export</button>
+                </form>
+                <div id="exportResult"></div>
+            `);
+
+            document.getElementById('exportForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const result = await apiRequest('/api/analytics/export', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    
+                    document.getElementById('exportResult').innerHTML = `
+                        <div class="alert alert-success mt-3">
+                            <h6>Export Complete!</h6>
+                            <p>Type: ${result.type}</p>
+                            <p>Records: ${result.data.length}</p>
+                            <p>Period: ${result.period.start} to ${result.period.end}</p>
+                            <button class="btn btn-sm btn-primary" 
+                                    onclick="downloadExport('${btoa(JSON.stringify(result))}')">
+                                Download JSON
+                            </button>
+                        </div>
+                    `;
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        function downloadExport(encodedData) {
+            const data = JSON.parse(atob(encodedData));
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `export-${data.type}-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        async function showTrendsModal() {
+            const trends = await apiRequest('/api/analytics/trends?period=30days');
+            
+            showModal('Trends Analysis', `
+                <div class="chart-container">
+                    <canvas id="multiTrendsChart"></canvas>
+                </div>
+            `, 'modal-lg');
+
+            setTimeout(() => {
+                const ctx = document.getElementById('multiTrendsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: trends.patients.map(d => new Date(d.date).toLocaleDateString()),
+                        datasets: [
+                            {
+                                label: 'New Patients',
+                                data: trends.patients.map(d => d.count),
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Revenue (₦)',
+                                data: trends.revenue.map(d => d.revenue),
+                                borderColor: 'rgb(255, 99, 132)',
+                                tension: 0.1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left'
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function showModal(title, content, size = '') {
+            const modalId = 'dynamicModal';
+            const existingModal = document.getElementById(modalId);
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modalHtml = `
+                <div class="modal fade" id="${modalId}" tabindex="-1">
+                    <div class="modal-dialog ${size}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">${title}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${content}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContainer').innerHTML = modalHtml;
+            const modal = new bootstrap.Modal(document.getElementById(modalId));
+            modal.show();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('dynamicModal');
+            if (modal) {
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
+            }
+        }
+
+        // Additional helper functions for missing features
+        async function showEditPatientModal(patientId) {
+            const patient = await apiRequest(`/api/patients/${patientId}`);
+            
+            showModal('Edit Patient', `
+                <form id="editPatientForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" value="${patient.name}" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="phone" value="${patient.phone || ''}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="${patient.email || ''}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            `);
+
+            document.getElementById('editPatientForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                // Keep existing data that's not in the form
+                data.date_of_birth = patient.date_of_birth;
+                data.gender = patient.gender;
+                data.blood_group = patient.blood_group;
+                data.address = patient.address;
+                data.emergency_contact = patient.emergency_contact;
+
+                try {
+                    await apiRequest(`/api/patients/${patientId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Patient updated successfully!');
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function showPatientMedicalHistory(patientId) {
+            const records = await apiRequest(`/api/medical-records?patient_id=${patientId}`);
+            
+            showModal('Medical History', `
+                <div class="data-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Diagnosis</th>
+                                <th>Doctor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${records.records.map(r => `
+                                <tr>
+                                    <td>${new Date(r.visit_date).toLocaleDateString()}</td>
+                                    <td>${r.visit_type || '-'}</td>
+                                    <td>${r.diagnosis || '-'}</td>
+                                    <td>${r.doctor_name || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        async function showNewMedicalRecordModal() {
+            const patients = await apiRequest('/api/patients');
+            const doctors = await apiRequest('/api/staff?role=Doctor');
+            
+            showModal('New Medical Record', `
+                <form id="newMedicalRecordForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Patient *</label>
+                            <select class="form-control" name="patient_id" required>
+                                <option value="">Select Patient</option>
+                                ${patients.patients.map(p => `
+                                    <option value="${p.id}">${p.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Doctor</label>
+                            <select class="form-control" name="doctor_id">
+                                <option value="">Select Doctor</option>
+                                ${doctors.staff.map(d => `
+                                    <option value="${d.id}">${d.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Visit Type</label>
+                        <select class="form-control" name="visit_type">
+                            <option value="Consultation">Consultation</option>
+                            <option value="Follow-up">Follow-up</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Chief Complaint</label>
+                        <textarea class="form-control" name="chief_complaint" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Diagnosis</label>
+                        <textarea class="form-control" name="diagnosis" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Treatment Plan</label>
+                        <textarea class="form-control" name="treatment_plan" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Record</button>
+                </form>
+            `);
+
+            document.getElementById('newMedicalRecordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    await apiRequest('/api/medical-records', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                    closeModal();
+                    alert('Medical record created successfully!');
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        async function viewMedicalRecord(recordId) {
+            // This would fetch and display the full medical record
+            alert('View medical record: ' + recordId);
+        }
+
+        async function viewInvoiceDetails(invoiceId) {
+            // This would fetch and display full invoice details
+            alert('View invoice details: ' + invoiceId);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+{
+  "reports": [
+    {
+      "id": 1,
+      "partner_id": 1,
+      "hospital_id": "37f6c11b-5ded-4c17-930d-88b1fec06301",
+      "report_type": "Monthly Health Report",
+      "reporting_period_start": "2025-09-01T00:00:00.000Z",
+      "reporting_period_end": "2025-09-29T00:00:00.000Z",
+      "submission_status": "Draft",
+      "data_payload": {
+        "revenue": 176865.84,
+        "admissions": 3,
+        "discharges": 0,
+        "patient_count": 6,
+        "emergency_cases": 1,
+        "insurance_claims": 2
+      },
+      "file_url": null,
+      "submission_method": "API",
+      "submission_ref": null,
+      "acknowledgment_ref": null,
+      "error_details": null,
+      "submitted_by": null,
+      "submitted_at": null,
+      "deadline_date": null,
+      "created_at": "2025-09-29T21:33:39.964Z",
+      "updated_at": "2025-09-29T21:33:39.964Z",
+      "partner_name": "Federal Ministry of Health"
+    },
+    {
+      "id": 3,
+      "partner_id": 1,
+      "hospital_id": "37f6c11b-5ded-4c17-930d-88b1fec06301",
+      "report_type": "Comprehensive Monthly Report",
+      "reporting_period_start": "2025-10-01T00:00:00.000Z",
+      "reporting_period_end": "2025-10-31T00:00:00.000Z",
+      "submission_status": "Submitted",
+      "data_payload": {
+        "hospital_info": {
+          "name": "GrandPro General Hospital",
+          "location": "Lagos, Nigeria",
+          "reporting_period": {
+            "end": "2025-10-04T03:26:15.336Z",
+            "start": "2025-09-04T03:26:15.336Z"
+          }
+        },
+        "staff_metrics": {
+          "nurses": 42,
+          "doctors": 15,
+          "total_staff": 89,
+          "support_staff": 32,
+          "average_overtime": 6.5
+        },
+        "inventory_status": {
+          "expired_items": 3,
+          "low_stock_items": 12,
+          "medicines_stocked": 287,
+          "emergency_supplies": "Adequate"
+        },
+        "compliance_status": {
+          "violations": 0,
+          "licenses_valid": true,
+          "pending_audits": 1,
+          "inspections_passed": true
+        },
+        "financial_summary": {
+          "revenue": 8750000,
+          "bad_debt": 75000,
+          "cash_payments": 5550000,
+          "pending_claims": 450000,
+          "insurance_claims": 3200000
+        },
+        "department_metrics": {
+          "surgery": {
+            "procedures": 18,
+            "successful": 17,
+            "complications": 1
+          },
+          "emergency": {
+            "visits": 156,
+            "critical_cases": 23,
+            "average_wait_time": 28
+          },
+          "inpatient": {
+            "admissions": 45,
+            "average_stay": 4.2,
+            "bed_occupancy": 78.5
+          },
+          "outpatient": {
+            "no_shows": 15,
+            "follow_ups": 128,
+            "consultations": 342
+          }
+        },
+        "patient_statistics": {
+          "mortality": 3,
+          "discharged": 76,
+          "referrals_in": 12,
+          "referrals_out": 8,
+          "total_patients": 523,
+          "active_patients": 412,
+          "new_registrations": 87
+        },
+        "quality_indicators": {
+          "infection_rate": 0.8,
+          "readmission_rate": 2.1,
+          "medication_errors": 0.3,
+          "patient_satisfaction": 4.3
+        }
+      },
+      "file_url": null,
+      "submission_method": "API",
+      "submission_ref": null,
+      "acknowledgment_ref": null,
+      "error_details": null,
+      "submitted_by": null,
+      "submitted_at": "2025-10-04T03:26:15.608Z",
+      "deadline_date": null,
+      "created_at": "2025-10-04T03:26:15.608Z",
+      "updated_at": "2025-10-04T03:26:15.608Z",
+      "partner_name": "Federal Ministry of Health"
+    },
+    {
+      "id": 2,
+      "partner_id": 1,
+      "hospital_id": "37f6c11b-5ded-4c17-930d-88b1fec06301",
+      "report_type": "Monthly Patient Statistics",
+      "reporting_period_start": "2025-10-01T00:00:00.000Z",
+      "reporting_period_end": "2025-10-31T00:00:00.000Z",
+      "submission_status": "Submitted",
+      "data_payload": {
+        "discharged": 20,
+        "mortality_rate": 0.5,
+        "new_admissions": 25,
+        "total_patients": 150,
+        "emergency_cases": 10,
+        "average_stay_days": 3.5,
+        "outpatient_visits": 80,
+        "bed_occupancy_rate": 75,
+        "surgical_procedures": 5,
+        "patient_satisfaction": 4.2
+      },
+      "file_url": null,
+      "submission_method": "API",
+      "submission_ref": null,
+      "acknowledgment_ref": null,
+      "error_details": null,
+      "submitted_by": null,
+      "submitted_at": "2025-10-04T03:25:11.515Z",
+      "deadline_date": null,
+      "created_at": "2025-10-04T03:25:11.515Z",
+      "updated_at": "2025-10-04T03:25:11.515Z",
+      "partner_name": "Federal Ministry of Health"
+    }
+  ],
+  "export_date": "2025-10-04T03:26:15.908Z",
+  "format": "consolidated"
+}

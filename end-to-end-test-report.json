@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-10-04T04:13:48.173Z",
+  "summary": {
+    "totalTests": 26,
+    "passed": 17,
+    "failed": 9,
+    "successRate": "65.4%"
+  },
+  "categories": {
+    "modules": {
+      "passed": 8,
+      "failed": 4,
+      "total": 12,
+      "successRate": "66.7%"
+    },
+    "integrations": {
+      "passed": 2,
+      "failed": 2,
+      "total": 4,
+      "successRate": "50.0%"
+    },
+    "workflows": {
+      "passed": 2,
+      "failed": 1,
+      "total": 3,
+      "successRate": "66.7%"
+    },
+    "external": {
+      "passed": 5,
+      "failed": 2,
+      "total": 7,
+      "successRate": "71.4%"
+    }
+  }
+}

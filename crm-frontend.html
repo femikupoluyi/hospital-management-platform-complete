@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandPro HMSO - CRM System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-hospital mr-3 text-2xl"></i>
+                    <h1 class="text-2xl font-bold">CRM System</h1>
+                </div>
+                <div class="flex space-x-6">
+                    <button onclick="switchTab('dashboard')" class="hover:text-blue-200">Dashboard</button>
+                    <button onclick="switchTab('owners')" class="hover:text-blue-200">Owner CRM</button>
+                    <button onclick="switchTab('patients')" class="hover:text-blue-200">Patient CRM</button>
+                    <button onclick="switchTab('appointments')" class="hover:text-blue-200">Appointments</button>
+                    <button onclick="switchTab('campaigns')" class="hover:text-blue-200">Campaigns</button>
+                    <button onclick="switchTab('loyalty')" class="hover:text-blue-200">Loyalty</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2 class="text-3xl font-bold mb-6">CRM Dashboard</h2>
+            
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Total Patients</p>
+                            <p class="text-2xl font-bold" id="totalPatients">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-building text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Hospital Owners</p>
+                            <p class="text-2xl font-bold" id="totalOwners">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-calendar-check text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Appointments</p>
+                            <p class="text-2xl font-bold" id="upcomingAppointments">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                            <i class="fas fa-star text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Satisfaction</p>
+                            <p class="text-2xl font-bold" id="avgSatisfaction">0%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600">
+                            <i class="fas fa-dollar-sign text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Payouts (30d)</p>
+                            <p class="text-2xl font-bold" id="monthlyPayouts">$0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                            <i class="fas fa-bullhorn text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-500 text-sm">Campaigns</p>
+                            <p class="text-2xl font-bold" id="activeCampaigns">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="showNewPatientForm()" class="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600">
+                        <i class="fas fa-user-plus mb-2"></i>
+                        <p>New Patient</p>
+                    </button>
+                    <button onclick="showScheduleAppointmentForm()" class="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600">
+                        <i class="fas fa-calendar-plus mb-2"></i>
+                        <p>Schedule Appointment</p>
+                    </button>
+                    <button onclick="showNewCampaignForm()" class="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600">
+                        <i class="fas fa-envelope mb-2"></i>
+                        <p>New Campaign</p>
+                    </button>
+                    <button onclick="showPayoutForm()" class="bg-yellow-500 text-white p-4 rounded-lg hover:bg-yellow-600">
+                        <i class="fas fa-money-check mb-2"></i>
+                        <p>Process Payout</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Owner CRM Tab -->
+        <div id="owners" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6">Hospital Owner Management</h2>
+            
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Owner Accounts</h3>
+                        <button onclick="loadOwners()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-sync mr-2"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Owner Name</th>
+                                <th class="px-6 py-3 text-left">Contact</th>
+                                <th class="px-6 py-3 text-left">Hospitals</th>
+                                <th class="px-6 py-3 text-left">Total Payouts</th>
+                                <th class="px-6 py-3 text-left">Satisfaction</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ownersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient CRM Tab -->
+        <div id="patients" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6">Patient Management</h2>
+            
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Patient Records</h3>
+                        <div>
+                            <button onclick="showNewPatientForm()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2">
+                                <i class="fas fa-plus mr-2"></i>New Patient
+                            </button>
+                            <button onclick="loadPatients()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                <i class="fas fa-sync mr-2"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left">MRN</th>
+                                <th class="px-6 py-3 text-left">Name</th>
+                                <th class="px-6 py-3 text-left">Contact</th>
+                                <th class="px-6 py-3 text-left">Appointments</th>
+                                <th class="px-6 py-3 text-left">Loyalty Points</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div id="appointments" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6">Appointment Management</h2>
+            
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">Schedule New Appointment</h3>
+                <form id="appointmentForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" placeholder="Patient ID" id="apptPatientId" class="border rounded px-3 py-2">
+                    <input type="date" id="apptDate" class="border rounded px-3 py-2">
+                    <input type="time" id="apptTime" class="border rounded px-3 py-2">
+                    <select id="apptType" class="border rounded px-3 py-2">
+                        <option value="consultation">Consultation</option>
+                        <option value="follow_up">Follow-up</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="routine_checkup">Routine Checkup</option>
+                    </select>
+                    <input type="text" placeholder="Reason" id="apptReason" class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-green-500 text-white rounded hover:bg-green-600">
+                        Schedule
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-bold">Upcoming Appointments</h3>
+                </div>
+                <div id="appointmentsList" class="p-6"></div>
+            </div>
+        </div>
+
+        <!-- Campaigns Tab -->
+        <div id="campaigns" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6">Communication Campaigns</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- WhatsApp Card -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fab fa-whatsapp text-green-500 mr-2"></i>WhatsApp
+                    </h3>
+                    <form id="whatsappForm">
+                        <input type="text" placeholder="Recipient ID" class="w-full border rounded px-3 py-2 mb-3">
+                        <textarea placeholder="Message" class="w-full border rounded px-3 py-2 mb-3" rows="3"></textarea>
+                        <button type="submit" class="w-full bg-green-500 text-white rounded py-2 hover:bg-green-600">
+                            Send WhatsApp
+                        </button>
+                    </form>
+                </div>
+
+                <!-- SMS Card -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fas fa-sms text-blue-500 mr-2"></i>SMS
+                    </h3>
+                    <form id="smsForm">
+                        <input type="text" placeholder="Recipient ID" class="w-full border rounded px-3 py-2 mb-3">
+                        <textarea placeholder="Message" class="w-full border rounded px-3 py-2 mb-3" rows="3"></textarea>
+                        <button type="submit" class="w-full bg-blue-500 text-white rounded py-2 hover:bg-blue-600">
+                            Send SMS
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Email Card -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fas fa-envelope text-purple-500 mr-2"></i>Email
+                    </h3>
+                    <form id="emailForm">
+                        <input type="text" placeholder="Recipient ID" class="w-full border rounded px-3 py-2 mb-3">
+                        <input type="text" placeholder="Subject" class="w-full border rounded px-3 py-2 mb-3">
+                        <textarea placeholder="Message" class="w-full border rounded px-3 py-2 mb-3" rows="3"></textarea>
+                        <button type="submit" class="w-full bg-purple-500 text-white rounded py-2 hover:bg-purple-600">
+                            Send Email
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Campaign List -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-bold">Active Campaigns</h3>
+                </div>
+                <div id="campaignsList" class="p-6"></div>
+            </div>
+        </div>
+
+        <!-- Loyalty Tab -->
+        <div id="loyalty" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6">Loyalty Program</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Available Rewards -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h3 class="text-xl font-bold">Available Rewards</h3>
+                    </div>
+                    <div id="rewardsList" class="p-6"></div>
+                </div>
+
+                <!-- Redemption Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-xl font-bold mb-4">Redeem Points</h3>
+                    <form id="redemptionForm">
+                        <input type="text" placeholder="Patient ID" class="w-full border rounded px-3 py-2 mb-3">
+                        <select class="w-full border rounded px-3 py-2 mb-3">
+                            <option>Select Reward</option>
+                        </select>
+                        <input type="number" placeholder="Points to Use" class="w-full border rounded px-3 py-2 mb-3">
+                        <button type="submit" class="w-full bg-green-500 text-white rounded py-2 hover:bg-green-600">
+                            Redeem Points
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Forms -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:7000/api';
+        
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'dashboard') loadDashboard();
+            if (tabName === 'owners') loadOwners();
+            if (tabName === 'patients') loadPatients();
+            if (tabName === 'campaigns') loadCampaigns();
+            if (tabName === 'loyalty') loadRewards();
+        }
+
+        // Load dashboard metrics
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/crm/metrics`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const metrics = data.data;
+                    document.getElementById('totalPatients').textContent = metrics.total_patients || 0;
+                    document.getElementById('totalOwners').textContent = metrics.total_owners || 0;
+                    document.getElementById('upcomingAppointments').textContent = metrics.upcoming_appointments || 0;
+                    document.getElementById('avgSatisfaction').textContent = 
+                        metrics.avg_satisfaction ? (metrics.avg_satisfaction * 20).toFixed(0) + '%' : 'N/A';
+                    document.getElementById('monthlyPayouts').textContent = 
+                        '$' + (metrics.monthly_payouts || 0).toLocaleString();
+                    document.getElementById('activeCampaigns').textContent = metrics.active_campaigns || 0;
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load owners
+        async function loadOwners() {
+            try {
+                const response = await fetch(`${API_BASE}/owners`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('ownersTableBody');
+                    tbody.innerHTML = data.data.map(owner => `
+                        <tr class="border-t hover:bg-gray-50">
+                            <td class="px-6 py-4">${owner.contact_name || 'N/A'}</td>
+                            <td class="px-6 py-4">${owner.contact_email || 'N/A'}</td>
+                            <td class="px-6 py-4">${owner.hospital_count || 0}</td>
+                            <td class="px-6 py-4">$${(owner.total_payouts || 0).toLocaleString()}</td>
+                            <td class="px-6 py-4">${owner.avg_satisfaction ? (owner.avg_satisfaction * 20).toFixed(0) + '%' : 'N/A'}</td>
+                            <td class="px-6 py-4">
+                                <button onclick="sendOwnerComm('${owner.owner_id}')" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="processOwnerPayout('${owner.owner_id}')" class="text-green-600 hover:text-green-800 ml-2">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading owners:', error);
+            }
+        }
+
+        // Load patients
+        async function loadPatients() {
+            try {
+                const response = await fetch(`${API_BASE}/patients`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('patientsTableBody');
+                    tbody.innerHTML = data.data.map(patient => `
+                        <tr class="border-t hover:bg-gray-50">
+                            <td class="px-6 py-4">${patient.medical_record_number}</td>
+                            <td class="px-6 py-4">${patient.first_name} ${patient.last_name}</td>
+                            <td class="px-6 py-4">${patient.phone || 'N/A'}</td>
+                            <td class="px-6 py-4">${patient.appointment_count || 0}</td>
+                            <td class="px-6 py-4">${patient.loyalty_points || 0}</td>
+                            <td class="px-6 py-4">
+                                <button onclick="scheduleAppointment('${patient.id}')" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-calendar"></i>
+                                </button>
+                                <button onclick="sendPatientMessage('${patient.id}')" class="text-green-600 hover:text-green-800 ml-2">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading patients:', error);
+            }
+        }
+
+        // Load campaigns
+        async function loadCampaigns() {
+            try {
+                const response = await fetch(`${API_BASE}/campaigns`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const list = document.getElementById('campaignsList');
+                    list.innerHTML = data.data.map(campaign => `
+                        <div class="border-b py-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-bold">${campaign.campaign_name}</h4>
+                                    <p class="text-gray-600">${campaign.channel} - ${campaign.campaign_type}</p>
+                                    <p class="text-sm text-gray-500">Recipients: ${campaign.recipient_count || 0} | Delivered: ${campaign.delivered_count || 0}</p>
+                                </div>
+                                <span class="px-3 py-1 rounded text-sm ${
+                                    campaign.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                }">
+                                    ${campaign.status}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading campaigns:', error);
+            }
+        }
+
+        // Load rewards
+        async function loadRewards() {
+            try {
+                const response = await fetch(`${API_BASE}/loyalty/rewards`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const list = document.getElementById('rewardsList');
+                    list.innerHTML = data.data.map(reward => `
+                        <div class="border-b py-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold">${reward.reward_name}</h4>
+                                    <p class="text-gray-600">${reward.description}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-purple-600">${reward.points_required} pts</p>
+                                    <p class="text-sm text-gray-500">Value: $${reward.reward_value}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading rewards:', error);
+            }
+        }
+
+        // Show new patient form
+        function showNewPatientForm() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <h3 class="text-xl font-bold mb-4">Register New Patient</h3>
+                <form id="newPatientForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="firstName" placeholder="First Name" class="border rounded px-3 py-2" required>
+                        <input type="text" id="lastName" placeholder="Last Name" class="border rounded px-3 py-2" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="email" id="email" placeholder="Email" class="border rounded px-3 py-2">
+                        <input type="tel" id="phone" placeholder="Phone" class="border rounded px-3 py-2" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="date" id="dob" placeholder="Date of Birth" class="border rounded px-3 py-2" required>
+                        <select id="gender" class="border rounded px-3 py-2" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <input type="text" id="address" placeholder="Address" class="w-full border rounded px-3 py-2">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="city" placeholder="City" class="border rounded px-3 py-2">
+                        <input type="text" id="state" placeholder="State" class="border rounded px-3 py-2">
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Register Patient
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            modal.classList.remove('hidden');
+            
+            document.getElementById('newPatientForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const patientData = {
+                    first_name: document.getElementById('firstName').value,
+                    last_name: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    date_of_birth: document.getElementById('dob').value,
+                    gender: document.getElementById('gender').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value
+                };
+                
+                try {
+                    const response = await fetch(`${API_BASE}/patients`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(patientData)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Patient registered successfully!');
+                        closeModal();
+                        loadPatients();
+                    }
+                } catch (error) {
+                    alert('Error registering patient: ' + error.message);
+                }
+            });
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // Form submissions
+        document.getElementById('appointmentForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const appointmentData = {
+                patient_id: document.getElementById('apptPatientId').value,
+                hospital_id: crypto.randomUUID(),
+                doctor_id: crypto.randomUUID(),
+                appointment_date: document.getElementById('apptDate').value,
+                appointment_time: document.getElementById('apptTime').value,
+                appointment_type: document.getElementById('apptType').value,
+                reason: document.getElementById('apptReason').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/appointments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(appointmentData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Appointment scheduled successfully!');
+                    document.getElementById('appointmentForm').reset();
+                }
+            } catch (error) {
+                alert('Error scheduling appointment: ' + error.message);
+            }
+        });
+
+        // Communication forms
+        document.getElementById('whatsappForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputs = e.target.elements;
+            
+            try {
+                const response = await fetch(`${API_BASE}/communications/whatsapp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recipient_id: inputs[0].value,
+                        message: inputs[1].value,
+                        recipient_type: 'patient'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('WhatsApp message sent!');
+                    e.target.reset();
+                }
+            } catch (error) {
+                alert('Error sending WhatsApp: ' + error.message);
+            }
+        });
+
+        document.getElementById('smsForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputs = e.target.elements;
+            
+            try {
+                const response = await fetch(`${API_BASE}/communications/sms`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recipient_id: inputs[0].value,
+                        message: inputs[1].value,
+                        recipient_type: 'patient'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('SMS sent!');
+                    e.target.reset();
+                }
+            } catch (error) {
+                alert('Error sending SMS: ' + error.message);
+            }
+        });
+
+        document.getElementById('emailForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputs = e.target.elements;
+            
+            try {
+                const response = await fetch(`${API_BASE}/communications/email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recipient_id: inputs[0].value,
+                        subject: inputs[1].value,
+                        message: inputs[2].value,
+                        recipient_type: 'patient'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Email sent!');
+                    e.target.reset();
+                }
+            } catch (error) {
+                alert('Error sending email: ' + error.message);
+            }
+        });
+
+        // Initialize dashboard on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

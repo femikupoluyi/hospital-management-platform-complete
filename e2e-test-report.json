@@ -1,0 +1,162 @@
+{
+  "timestamp": "2025-10-01T13:22:33.712Z",
+  "summary": {
+    "totalTests": 18,
+    "passed": 12,
+    "failed": 6
+  },
+  "externalURLs": [
+    {
+      "module": "unified",
+      "url": "https://unified-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    },
+    {
+      "module": "crm",
+      "url": "https://crm-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    },
+    {
+      "module": "hms",
+      "url": "https://hms-module-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    },
+    {
+      "module": "occ",
+      "url": "https://occ-command-centre-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    },
+    {
+      "module": "partner",
+      "url": "https://partner-integration-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    },
+    {
+      "module": "sourcing",
+      "url": "https://digital-sourcing-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "working": true
+    }
+  ],
+  "backendAPIs": [
+    {
+      "name": "Hospital Backend",
+      "url": "http://localhost:5000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "GrandPro HMSO Backend API",
+        "timestamp": "2025-10-01T13:22:33.435Z"
+      }
+    },
+    {
+      "name": "CRM Backend",
+      "url": "http://localhost:7000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "CRM Backend Server",
+        "timestamp": "2025-10-01T13:22:33.438Z"
+      }
+    },
+    {
+      "name": "HMS Module",
+      "url": "http://localhost:9000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "HMS Module",
+        "timestamp": "2025-10-01T13:22:33.441Z"
+      }
+    },
+    {
+      "name": "Partner Integration",
+      "url": "http://localhost:11000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "Partner Integration API",
+        "timestamp": "2025-10-01T13:22:33.444Z"
+      }
+    },
+    {
+      "name": "Analytics",
+      "url": "http://localhost:14000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "Data Analytics Infrastructure",
+        "timestamp": "2025-10-01T13:22:33.448Z",
+        "components": {
+          "dataLake": "operational",
+          "predictiveAnalytics": "operational",
+          "aimlModels": "operational"
+        }
+      }
+    },
+    {
+      "name": "ML Service",
+      "url": "http://localhost:13000/api/health",
+      "status": 200,
+      "working": true,
+      "data": {
+        "status": "healthy",
+        "service": "Analytics & ML Service",
+        "timestamp": "2025-10-01T13:22:33.451Z"
+      }
+    },
+    {
+      "name": "OCC Command",
+      "url": "http://localhost:15000/api/health",
+      "status": 404,
+      "working": false,
+      "error": "Request failed with status code 404"
+    }
+  ],
+  "dataFlow": [
+    {
+      "test": "Create Patient",
+      "module": "CRM",
+      "success": false,
+      "error": "Request failed with status code 500"
+    },
+    {
+      "test": "Submit Hospital Application",
+      "module": "Digital Sourcing",
+      "success": false,
+      "error": "Request failed with status code 500"
+    },
+    {
+      "test": "Submit Insurance Claim",
+      "module": "Partner Integration",
+      "success": false,
+      "error": "Request failed with status code 404"
+    },
+    {
+      "test": "Get Analytics Summary",
+      "module": "Data Analytics",
+      "success": false,
+      "error": "Request failed with status code 404"
+    },
+    {
+      "test": "ML Triage Assessment",
+      "module": "ML Service",
+      "success": false,
+      "error": "Request failed with status code 404"
+    }
+  ],
+  "database": {
+    "connected": false,
+    "error": "pool.query is not a function"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "hospital_info": {
+    "name": "GrandPro General Hospital",
+    "location": "Lagos, Nigeria",
+    "reporting_period": {
+      "start": "2025-09-04T03:26:15.336Z",
+      "end": "2025-10-04T03:26:15.336Z"
+    }
+  },
+  "patient_statistics": {
+    "total_patients": 523,
+    "new_registrations": 87,
+    "active_patients": 412,
+    "discharged": 76,
+    "mortality": 3,
+    "referrals_in": 12,
+    "referrals_out": 8
+  },
+  "department_metrics": {
+    "emergency": {
+      "visits": 156,
+      "average_wait_time": 28,
+      "critical_cases": 23
+    },
+    "outpatient": {
+      "consultations": 342,
+      "follow_ups": 128,
+      "no_shows": 15
+    },
+    "inpatient": {
+      "admissions": 45,
+      "average_stay": 4.2,
+      "bed_occupancy": 78.5
+    },
+    "surgery": {
+      "procedures": 18,
+      "successful": 17,
+      "complications": 1
+    }
+  },
+  "financial_summary": {
+    "revenue": 8750000,
+    "insurance_claims": 3200000,
+    "cash_payments": 5550000,
+    "pending_claims": 450000,
+    "bad_debt": 75000
+  },
+  "quality_indicators": {
+    "patient_satisfaction": 4.3,
+    "infection_rate": 0.8,
+    "readmission_rate": 2.1,
+    "medication_errors": 0.3
+  },
+  "inventory_status": {
+    "medicines_stocked": 287,
+    "low_stock_items": 12,
+    "expired_items": 3,
+    "emergency_supplies": "Adequate"
+  },
+  "staff_metrics": {
+    "total_staff": 89,
+    "doctors": 15,
+    "nurses": 42,
+    "support_staff": 32,
+    "average_overtime": 6.5
+  },
+  "compliance_status": {
+    "licenses_valid": true,
+    "inspections_passed": true,
+    "pending_audits": 1,
+    "violations": 0
+  }
+}

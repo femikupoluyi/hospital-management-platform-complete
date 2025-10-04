@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-10-01T10:35:02.935Z",
+  "module": "Digital Sourcing & Partner Onboarding",
+  "features": [
+    {
+      "name": "Document Upload",
+      "status": false
+    },
+    {
+      "name": "Scoring Algorithm",
+      "status": true
+    },
+    {
+      "name": "Contract Generation",
+      "status": false
+    },
+    {
+      "name": "Digital Signing",
+      "status": true
+    },
+    {
+      "name": "Dashboard Tracking",
+      "status": false
+    }
+  ],
+  "verificationScore": "40%",
+  "details": {
+    "scoringAlgorithm": "Scoring system operational with 10 criteria",
+    "contractGeneration": "column \"template_type\" of relation \"contracts\" does not exist",
+    "digitalSigning": "Digital signing structure configured",
+    "dashboardTracking": "column \"status\" does not exist"
+  },
+  "conclusion": "Module functional but some features need configuration"
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Module Test Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; background: #f5f5f5; }
+        .test-card { margin-bottom: 20px; }
+        .status-badge { float: right; }
+        .test-result { margin-top: 10px; padding: 10px; background: #fff; border-radius: 5px; }
+        .success { background: #d4edda !important; }
+        .error { background: #f8d7da !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Hospital Management System - Module Testing</h1>
+        <p>Test all HMS modules to ensure they are fully functional</p>
+        
+        <div class="card test-card">
+            <div class="card-body">
+                <h5>API Configuration</h5>
+                <input type="text" id="apiUrl" class="form-control mb-2" value="http://localhost:5801/api" placeholder="API Base URL">
+                <button class="btn btn-primary" onclick="testConnection()">Test Connection</button>
+                <div id="connectionResult" class="test-result mt-2" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="card test-card">
+            <div class="card-body">
+                <h5>Authentication</h5>
+                <button class="btn btn-success" onclick="login()">Login as Admin</button>
+                <div id="authResult" class="test-result mt-2" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="card test-card">
+            <div class="card-body">
+                <h5>Module Tests</h5>
+                <button class="btn btn-info me-2" onclick="testPatients()">Test Patients</button>
+                <button class="btn btn-info me-2" onclick="testBilling()">Test Billing</button>
+                <button class="btn btn-info me-2" onclick="testInventory()">Test Inventory</button>
+                <button class="btn btn-info me-2" onclick="testBeds()">Test Beds</button>
+                <button class="btn btn-info me-2" onclick="testAnalytics()">Test Analytics</button>
+                <div id="moduleResult" class="test-result mt-2" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="card test-card">
+            <div class="card-body">
+                <h5>Test Results Summary</h5>
+                <div id="summary" class="test-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = '';
+        let apiBase = '';
+        let testResults = {
+            connection: false,
+            auth: false,
+            patients: false,
+            billing: false,
+            inventory: false,
+            beds: false,
+            analytics: false
+        };
+
+        async function testConnection() {
+            apiBase = document.getElementById('apiUrl').value;
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${apiBase}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    testResults.connection = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Connection successful! Service: ${data.service}<br>
+                        Modules active: ${Object.keys(data.modules).filter(m => data.modules[m] === 'active').length}/12`;
+                } else {
+                    throw new Error('Service not healthy');
+                }
+            } catch (error) {
+                testResults.connection = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Connection failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function login() {
+            const resultDiv = document.getElementById('authResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${apiBase}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                const data = await response.json();
+                
+                if (data.token) {
+                    authToken = data.token;
+                    testResults.auth = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Login successful! User: ${data.user.username} (${data.user.role})`;
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (error) {
+                testResults.auth = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Login failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function testPatients() {
+            const resultDiv = document.getElementById('moduleResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                // Test GET
+                const getResponse = await fetch(`${apiBase}/patients`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const patients = await getResponse.json();
+                
+                // Test POST
+                const newPatient = {
+                    name: 'Test Patient ' + Date.now(),
+                    dob: '1990-01-01',
+                    gender: 'male',
+                    contact: '1234567890',
+                    email: 'test@example.com'
+                };
+                
+                const postResponse = await fetch(`${apiBase}/patients`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newPatient)
+                });
+                const created = await postResponse.json();
+                
+                if (Array.isArray(patients) && created.id) {
+                    testResults.patients = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Patients module working! Found ${patients.length} patients. Created patient ID: ${created.id}`;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                testResults.patients = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Patients module failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function testBilling() {
+            const resultDiv = document.getElementById('moduleResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                // Test revenue stats
+                const response = await fetch(`${apiBase}/billing/revenue/stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const stats = await response.json();
+                
+                if (stats.hasOwnProperty('total_revenue')) {
+                    testResults.billing = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Billing module working! Total revenue: $${stats.total_revenue || 0}`;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                testResults.billing = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Billing module failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function testInventory() {
+            const resultDiv = document.getElementById('moduleResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${apiBase}/inventory`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const items = await response.json();
+                
+                const lowStockResponse = await fetch(`${apiBase}/inventory/low-stock`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const lowStock = await lowStockResponse.json();
+                
+                if (Array.isArray(items) && Array.isArray(lowStock)) {
+                    testResults.inventory = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Inventory module working! ${items.length} items, ${lowStock.length} low stock alerts`;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                testResults.inventory = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Inventory module failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function testBeds() {
+            const resultDiv = document.getElementById('moduleResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${apiBase}/beds/available`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const beds = await response.json();
+                
+                if (Array.isArray(beds)) {
+                    testResults.beds = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Beds module working! ${beds.length} beds available`;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                testResults.beds = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Beds module failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        async function testAnalytics() {
+            const resultDiv = document.getElementById('moduleResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${apiBase}/analytics/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const stats = await response.json();
+                
+                if (stats.hasOwnProperty('patients') && stats.hasOwnProperty('staff')) {
+                    testResults.analytics = true;
+                    resultDiv.className = 'test-result success';
+                    resultDiv.innerHTML = `✅ Analytics working! Patients: ${stats.patients}, Staff: ${stats.staff}, Available Beds: ${stats.beds?.available || 0}`;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                testResults.analytics = false;
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `❌ Analytics module failed: ${error.message}`;
+            }
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('summary');
+            const passed = Object.values(testResults).filter(r => r === true).length;
+            const total = Object.keys(testResults).length;
+            const percentage = Math.round((passed / total) * 100);
+            
+            let html = `<h5>Test Progress: ${passed}/${total} (${percentage}%)</h5>`;
+            html += '<ul>';
+            for (const [key, value] of Object.entries(testResults)) {
+                html += `<li>${value ? '✅' : '❌'} ${key.charAt(0).toUpperCase() + key.slice(1)}</li>`;
+            }
+            html += '</ul>';
+            
+            if (percentage === 100) {
+                html += '<div class="alert alert-success">🎉 All modules are fully functional!</div>';
+            } else if (percentage >= 70) {
+                html += '<div class="alert alert-warning">⚠️ Most modules are working, but some need attention.</div>';
+            } else {
+                html += '<div class="alert alert-danger">❌ Several modules need to be fixed.</div>';
+            }
+            
+            summary.innerHTML = html;
+        }
+
+        // Initialize
+        updateSummary();
+        
+        // Auto-test connection on load
+        window.onload = () => {
+            setTimeout(testConnection, 500);
+        };
+    </script>
+</body>
+</html>

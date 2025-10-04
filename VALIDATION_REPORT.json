@@ -1,0 +1,112 @@
+{
+  "timestamp": "2025-10-04T18:45:31.515Z",
+  "modules": {
+    "onboarding": {
+      "portal": true,
+      "applicationSubmit": false,
+      "scoring": true,
+      "contractGeneration": false,
+      "dashboard": false,
+      "exposedUrl": true
+    },
+    "crm": {
+      "ownerCRM": false,
+      "patientCRM": true,
+      "appointments": true,
+      "reminders": true,
+      "campaigns": false,
+      "loyalty": true,
+      "exposedUrl": true
+    },
+    "hms": {
+      "emr": false,
+      "billing": false,
+      "inventory": false,
+      "staffManagement": false,
+      "bedManagement": false,
+      "analytics": false,
+      "exposedUrl": true
+    },
+    "occ": {
+      "monitoring": false,
+      "dashboards": false,
+      "alerts": false,
+      "projectManagement": false,
+      "exposedUrl": false
+    },
+    "partner": {
+      "insurance": false,
+      "pharmacy": false,
+      "telemedicine": false,
+      "compliance": false,
+      "exposedUrl": false
+    },
+    "analytics": {
+      "dataLake": false,
+      "predictiveAnalytics": false,
+      "mlModels": false,
+      "exposedUrl": false
+    }
+  },
+  "database": {
+    "connection": false,
+    "schemas": {},
+    "tables": {}
+  },
+  "exposedUrls": {
+    "Onboarding Portal": {
+      "url": "http://morphvm:6001",
+      "status": "WORKING",
+      "accessible": true
+    },
+    "CRM Portal": {
+      "url": "http://morphvm:7001",
+      "status": "WORKING",
+      "accessible": true
+    },
+    "HMS Portal": {
+      "url": "http://morphvm:5800",
+      "status": "WORKING",
+      "accessible": true
+    },
+    "OCC Dashboard": {
+      "url": "http://morphvm:8081",
+      "status": "UNREACHABLE",
+      "accessible": false,
+      "error": "connect ECONNREFUSED 127.0.0.1:8081"
+    },
+    "Partner API": {
+      "url": "http://morphvm:9000",
+      "status": "UNREACHABLE",
+      "accessible": false,
+      "error": "connect ECONNREFUSED 127.0.0.1:9000"
+    },
+    "Analytics Dashboard": {
+      "url": "http://morphvm:9500",
+      "status": "UNREACHABLE",
+      "accessible": false,
+      "error": "connect ECONNREFUSED 127.0.0.1:9500"
+    },
+    "Unified Frontend": {
+      "url": "http://morphvm:8082",
+      "status": "UNREACHABLE",
+      "accessible": false,
+      "error": "connect ECONNREFUSED 127.0.0.1:8082"
+    },
+    "API Documentation": {
+      "url": "http://morphvm:3001",
+      "status": "WORKING",
+      "accessible": true
+    }
+  },
+  "totalTests": 42,
+  "passedTests": 13,
+  "failedTests": 29,
+  "issues": [
+    "OCC: connect ECONNREFUSED 127.0.0.1:8081",
+    "Partner: connect ECONNREFUSED 127.0.0.1:9000",
+    "Analytics: connect ECONNREFUSED 127.0.0.1:9500",
+    "Database: password authentication failed for user 'neondb_owner'"
+  ],
+  "successRate": "30.95%"
+}

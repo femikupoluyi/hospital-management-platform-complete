@@ -1,0 +1,371 @@
+{
+  "local": {
+    "success": [
+      {
+        "name": "Hospital Onboarding (Next.js)",
+        "url": "http://localhost:3000",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "x-nextjs-cache": "HIT",
+          "x-nextjs-prerender": "1, 1",
+          "x-nextjs-stale-time": "300",
+          "x-powered-by": "Next.js",
+          "cache-control": "s-maxage=31536000",
+          "etag": "\"qkwqp9ci8c56n\"",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "6719",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html><!--5TJix6HYuYG8Jm5rg0UVb--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\""
+      },
+      {
+        "name": "Backend API",
+        "url": "http://localhost:3001",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "last-modified": "Tue, 30 Sep 2025 23:16:05 GMT",
+          "etag": "W/\"429c-1999ce964d2\"",
+          "content-type": "text/html; charset=UTF-8",
+          "content-length": "17052",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "HMS Module",
+        "url": "http://localhost:3002",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "last-modified": "Tue, 30 Sep 2025 23:50:33 GMT",
+          "etag": "W/\"57b1-1999d08f44f\"",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "22449",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "OCC Dashboard",
+        "url": "http://localhost:8080",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "11538",
+          "etag": "W/\"2d12-VufGSQ1g/dOI/clTSjDE7E8z8CY\"",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"w"
+      },
+      {
+        "name": "Partner Integration",
+        "url": "http://localhost:9000",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "last-modified": "Tue, 30 Sep 2025 22:16:35 GMT",
+          "etag": "W/\"38b2-1999cb2ebb8\"",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "14514",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "CRM System",
+        "url": "http://localhost:10001",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "last-modified": "Tue, 30 Sep 2025 22:53:46 GMT",
+          "etag": "W/\"6949-1999cd4f72f\"",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "26953",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "Analytics ML",
+        "url": "http://localhost:11000",
+        "type": "local",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "x-powered-by": "Express",
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "last-modified": "Tue, 30 Sep 2025 22:24:59 GMT",
+          "etag": "W/\"7131-1999cba9dec\"",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "28977",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      }
+    ],
+    "failed": [
+      {
+        "name": "API Documentation",
+        "url": "http://localhost:5000",
+        "type": "local",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "139",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<"
+      },
+      {
+        "name": "Unified Frontend",
+        "url": "http://localhost:12000",
+        "type": "local",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "x-powered-by": "Express",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "139",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<"
+      },
+      {
+        "name": "Main Frontend (old)",
+        "url": "http://localhost:13000",
+        "type": "local",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "139",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<"
+      }
+    ]
+  },
+  "external": {
+    "success": [
+      {
+        "name": "External HMS",
+        "url": "https://hms-module-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "content-length": "14514",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "etag": "W/\"38b2-1999cb2ebb8\"",
+          "last-modified": "Tue, 30 Sep 2025 22:16:35 GMT",
+          "server": "Caddy",
+          "x-powered-by": "Express",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "External Partner API",
+        "url": "https://partner-integration-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "cache-control": "public, max-age=0",
+          "content-length": "28977",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 01 Oct 2025 10:10:31 GMT",
+          "etag": "W/\"7131-1999cba9dec\"",
+          "last-modified": "Tue, 30 Sep 2025 22:24:59 GMT",
+          "server": "Caddy",
+          "x-powered-by": "Express",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      },
+      {
+        "name": "External Unified Frontend",
+        "url": "https://unified-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "cache-control": "public, max-age=0",
+          "content-length": "22449",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 01 Oct 2025 10:10:31 GMT",
+          "etag": "W/\"57b1-1999d08f44f\"",
+          "last-modified": "Tue, 30 Sep 2025 23:50:33 GMT",
+          "server": "Caddy",
+          "x-powered-by": "Express",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content"
+      }
+    ],
+    "failed": [
+      {
+        "name": "External Hospital App",
+        "url": "https://hospital-app-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "aaa8d07e3d394e523b70d800b09ea298/1850545513708811073",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      },
+      {
+        "name": "External Backend API",
+        "url": "https://hospital-backend-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "d6c8fad034fda8fa4798875542f61965/4065321013342843561",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      },
+      {
+        "name": "External API Docs",
+        "url": "https://api-docs-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "3baca279f432c752476f3d79b0a2f6dd/8169283472654787682",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      },
+      {
+        "name": "External OCC",
+        "url": "https://occ-enhanced-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "9db9096b6b945ca9f9b29a7bb544cb53/6970851474746042887",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      },
+      {
+        "name": "External Analytics",
+        "url": "https://analytics-ml-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "34cc3cda7cc313b7c6f02cfbd2b2bfae/16689042203740375279",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      },
+      {
+        "name": "External Main Frontend",
+        "url": "https://main-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+        "type": "external",
+        "status": 404,
+        "success": false,
+        "headers": {
+          "content-length": "0",
+          "date": "Wed, 01 Oct 2025 10:10:30 GMT",
+          "server": "Caddy",
+          "x-request-id": "fa99269ccd07f18bca6fecb644ddaf18/3151706322146707828",
+          "via": "1.1 google",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+        },
+        "bodySnippet": ""
+      }
+    ]
+  }
+}

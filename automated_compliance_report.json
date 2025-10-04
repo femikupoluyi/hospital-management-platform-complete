@@ -1,0 +1,36 @@
+{
+  "report_id": "RPT-2025-10-001",
+  "generated_at": "2025-10-01T12:50:49.475Z",
+  "reporting_period": "2025-10",
+  "hospital_network": {
+    "total_hospitals": 16,
+    "total_beds": 2500,
+    "total_staff": 430
+  },
+  "statistics": {
+    "total_patients_served": 24567,
+    "total_admissions": 3421,
+    "bed_occupancy_rate": 85.3,
+    "average_length_of_stay": 4.2,
+    "patient_satisfaction_score": 92.5,
+    "emergency_response_time_avg": "12 minutes",
+    "surgical_procedures_completed": 678,
+    "outpatient_visits": 12341
+  },
+  "financial_metrics": {
+    "total_revenue": "$3,456,789",
+    "insurance_claims_processed": 2341,
+    "claim_approval_rate": "87%",
+    "average_payment_cycle": "21 days"
+  },
+  "quality_indicators": {
+    "infection_rate": "0.8%",
+    "readmission_rate": "3.2%",
+    "mortality_rate": "1.2%",
+    "medication_error_rate": "0.1%"
+  },
+  "compliance_status": "COMPLIANT",
+  "submitted_to": "Federal Ministry of Health",
+  "submission_method": "Automated API",
+  "next_submission_due": "2025-11-01"
+}

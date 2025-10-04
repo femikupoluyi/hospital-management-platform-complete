@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Centre - Operations Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-color: #48bb78;
+            --warning-color: #f6ad55;
+            --danger-color: #fc8181;
+            --dark-bg: #1a202c;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header .status-indicators {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .ws-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .ws-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fc8181;
+        }
+
+        .ws-indicator.connected {
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: #718096;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 5px;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            margin-top: 10px;
+        }
+
+        .metric-change.positive {
+            color: var(--success-color);
+        }
+
+        .metric-change.negative {
+            color: var(--danger-color);
+        }
+
+        .alert-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .alert-card.critical {
+            border-color: #fc8181;
+            background: linear-gradient(90deg, rgba(252,129,129,0.1) 0%, white 100%);
+        }
+
+        .alert-card.warning {
+            border-color: #f6ad55;
+            background: linear-gradient(90deg, rgba(246,173,85,0.1) 0%, white 100%);
+        }
+
+        .alert-card.info {
+            border-color: #4299e1;
+            background: linear-gradient(90deg, rgba(66,153,225,0.1) 0%, white 100%);
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .hospital-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hospital-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-gradient);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .nav-tabs .nav-link {
+            color: #718096;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #667eea;
+            background: none;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .real-time-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #fc8181;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: -20px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .floating-action button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .floating-action button:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .metric-value {
+                font-size: 1.8rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="bi bi-hospital"></i> Command Centre</h1>
+                    <p class="mb-0">Real-time Operations & Development Management</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="status-indicators justify-content-md-end mt-3 mt-md-0">
+                        <div class="ws-status">
+                            <div class="ws-indicator" id="wsIndicator"></div>
+                            <span id="wsStatus">Connecting...</span>
+                        </div>
+                        <div class="text-white">
+                            <span class="real-time-indicator"></span>
+                            <span id="currentTime">00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <!-- Key Metrics Row -->
+        <div class="row mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalPatients">0</div>
+                    <div class="metric-label">Total Patients</div>
+                    <div class="metric-change positive" id="patientsChange">
+                        <i class="bi bi-arrow-up"></i> +0 today
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="activeAdmissions">0</div>
+                    <div class="metric-label">Active Admissions</div>
+                    <div class="metric-change" id="admissionsChange">
+                        <i class="bi bi-activity"></i> Live
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="availableBeds">0</div>
+                    <div class="metric-label">Available Beds</div>
+                    <div class="metric-change" id="bedsChange">
+                        <i class="bi bi-hospital"></i> Capacity
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="staffPresent">0</div>
+                    <div class="metric-label">Staff On Duty</div>
+                    <div class="metric-change" id="staffChange">
+                        <i class="bi bi-people"></i> Active
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="todayRevenue">$0</div>
+                    <div class="metric-label">Today's Revenue</div>
+                    <div class="metric-change positive" id="revenueChange">
+                        <i class="bi bi-graph-up"></i> +0%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card position-relative">
+                    <div class="notification-badge" id="alertCount">0</div>
+                    <div class="metric-value" id="activeAlerts">0</div>
+                    <div class="metric-label">Active Alerts</div>
+                    <div class="metric-change negative" id="alertsChange">
+                        <i class="bi bi-exclamation-triangle"></i> Critical
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#overview">
+                    <i class="bi bi-speedometer2"></i> Overview
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#patientFlow">
+                    <i class="bi bi-people"></i> Patient Flow
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#staffKPIs">
+                    <i class="bi bi-person-badge"></i> Staff KPIs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#financial">
+                    <i class="bi bi-currency-dollar"></i> Financial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#alerts">
+                    <i class="bi bi-bell"></i> Alerts
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#projects">
+                    <i class="bi bi-kanban"></i> Projects
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h5>Patient Flow - Last 24 Hours</h5>
+                            <canvas id="patientFlowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="chart-container">
+                            <h5>Hospital Network Status</h5>
+                            <div id="hospitalsList"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5>Bed Occupancy by Ward</h5>
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5>Revenue Trend - 30 Days</h5>
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Flow Tab -->
+            <div class="tab-pane fade" id="patientFlow">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5>Real-time Patient Movement</h5>
+                            <canvas id="patientMovementChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>New Admissions</h6>
+                            <div class="metric-value" id="newAdmissions">0</div>
+                            <small class="text-muted">Last Hour</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>Discharges</h6>
+                            <div class="metric-value" id="discharges">0</div>
+                            <small class="text-muted">Last Hour</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>Average Wait Time</h6>
+                            <div class="metric-value" id="avgWaitTime">0m</div>
+                            <small class="text-muted">Emergency Dept</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff KPIs Tab -->
+            <div class="tab-pane fade" id="staffKPIs">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h5>Department Performance</h5>
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>Attendance Rate</h6>
+                            <div class="progress-bar-custom">
+                                <div class="progress-bar-fill" id="attendanceBar" style="width: 0%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small>0%</small>
+                                <small id="attendanceRate">0%</small>
+                                <small>100%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Staff by Department</h6>
+                        <div class="staff-grid" id="staffGrid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Tab -->
+            <div class="tab-pane fade" id="financial">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h5>Revenue Analysis</h5>
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>Outstanding Payments</h6>
+                            <div class="metric-value text-warning" id="outstanding">$0</div>
+                            <div class="mt-3">
+                                <h6>Insurance Claims</h6>
+                                <div id="claimsStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Tab -->
+            <div class="tab-pane fade" id="alerts">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h5>Active Alerts</h5>
+                        <div id="alertsList"></div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="metric-card">
+                            <h6>Alert Summary</h6>
+                            <canvas id="alertsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div class="tab-pane fade" id="projects">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5>Active Projects</h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-primary" onclick="showNewProjectModal()">
+                            <i class="bi bi-plus-circle"></i> New Project
+                        </button>
+                    </div>
+                </div>
+                <div id="projectsList"></div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6>Upcoming Milestones</h6>
+                        <div id="milestonesList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action">
+        <button onclick="refreshDashboard()" title="Refresh Dashboard">
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="alertModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="alertDetails"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="acknowledgeAlert()">Acknowledge</button>
+                    <button type="button" class="btn btn-success" onclick="resolveAlert()">Resolve</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="projectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="projectForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="projectName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hospital</label>
+                                <select class="form-select" id="projectHospital">
+                                    <option value="HOSP-001">Central General Hospital</option>
+                                    <option value="HOSP-002">North Medical Center</option>
+                                    <option value="HOSP-003">East Community Hospital</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Type</label>
+                                <select class="form-select" id="projectType">
+                                    <option value="expansion">Expansion</option>
+                                    <option value="renovation">Renovation</option>
+                                    <option value="it_upgrade">IT Upgrade</option>
+                                    <option value="equipment">Equipment</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" id="projectPriority">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Budget</label>
+                                <input type="number" class="form-control" id="projectBudget" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="projectStart" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="projectEnd" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Project Manager</label>
+                            <input type="text" class="form-control" id="projectManager" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="projectDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="createProject()">Create Project</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:6000' 
+            : 'https://command-centre-api-morphvm-mkofwuzh.http.cloud.morph.so';
+        
+        const WS_URL = window.location.hostname === 'localhost'
+            ? 'ws://localhost:6000'
+            : 'wss://command-centre-api-morphvm-mkofwuzh.http.cloud.morph.so';
+
+        let ws = null;
+        let charts = {};
+        let currentAlert = null;
+
+        // Initialize WebSocket
+        function initWebSocket() {
+            ws = new WebSocket(WS_URL);
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('wsIndicator').classList.add('connected');
+                document.getElementById('wsStatus').textContent = 'Connected';
+                
+                // Subscribe to alerts
+                ws.send(JSON.stringify({ type: 'subscribe_alerts' }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleRealtimeUpdate(data);
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('wsIndicator').classList.remove('connected');
+                document.getElementById('wsStatus').textContent = 'Disconnected';
+                setTimeout(initWebSocket, 5000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // Handle real-time updates
+        function handleRealtimeUpdate(data) {
+            switch (data.type) {
+                case 'metrics_update':
+                    updateMetrics(data.metrics);
+                    break;
+                case 'alert':
+                    handleNewAlert(data.alert);
+                    break;
+                case 'patient_flow_update':
+                    updatePatientFlow(data.data);
+                    break;
+                case 'project_updated':
+                    updateProjectDisplay(data.project);
+                    break;
+            }
+        }
+
+        // Update metrics display
+        function updateMetrics(metrics) {
+            // This would update the dashboard with real-time metrics
+            console.log('Metrics update:', metrics);
+        }
+
+        // Handle new alert
+        function handleNewAlert(alert) {
+            // Show notification
+            showNotification(`New ${alert.severity} alert: ${alert.message}`, alert.severity);
+            
+            // Update alert count
+            const alertCount = document.getElementById('alertCount');
+            alertCount.textContent = parseInt(alertCount.textContent) + 1;
+            
+            // Add to alerts list if on alerts tab
+            if (document.querySelector('#alerts.active')) {
+                loadAlerts();
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // In production, use a proper notification library
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Patient Flow Chart
+            const patientFlowCtx = document.getElementById('patientFlowChart').getContext('2d');
+            charts.patientFlow = new Chart(patientFlowCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Admissions',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Discharges',
+                        data: [],
+                        borderColor: '#48bb78',
+                        backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Occupancy Chart
+            const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+            charts.occupancy = new Chart(occupancyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['ICU', 'General', 'Pediatric', 'Maternity', 'Emergency'],
+                    datasets: [{
+                        label: 'Occupancy %',
+                        data: [85, 72, 60, 45, 90],
+                        backgroundColor: [
+                            '#fc8181',
+                            '#f6ad55',
+                            '#48bb78',
+                            '#4299e1',
+                            '#9f7aea'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Daily Revenue',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/dashboard`);
+                const data = await response.json();
+                
+                // Update metrics
+                document.getElementById('totalPatients').textContent = data.patients.total_patients || 0;
+                document.getElementById('activeAdmissions').textContent = data.patients.current_admissions || 0;
+                document.getElementById('availableBeds').textContent = data.inventory.total_items || 0;
+                document.getElementById('todayRevenue').textContent = `$${(data.financial.today_revenue || 0).toFixed(2)}`;
+                document.getElementById('activeAlerts').textContent = data.alerts.length || 0;
+                
+                // Update change indicators
+                document.getElementById('patientsChange').innerHTML = 
+                    `<i class="bi bi-arrow-up"></i> +${data.patients.new_today || 0} today`;
+                
+                // Load hospitals
+                loadHospitals();
+                
+                // Load financial data
+                loadFinancialMetrics();
+                
+                // Load alerts
+                loadAlerts();
+                
+                // Load projects
+                loadProjects();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load hospitals
+        async function loadHospitals() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/hospitals`);
+                const hospitals = await response.json();
+                
+                const hospitalsList = document.getElementById('hospitalsList');
+                hospitalsList.innerHTML = hospitals.map(hospital => `
+                    <div class="hospital-card mb-2">
+                        <h6>${hospital.name}</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Capacity</small>
+                                <div><strong>${hospital.capacity || 0}</strong></div>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Available Beds</small>
+                                <div><strong>${hospital.available_beds || 0}</strong></div>
+                            </div>
+                        </div>
+                        <div class="progress-bar-custom mt-2">
+                            <div class="progress-bar-fill" style="width: ${((hospital.capacity - hospital.available_beds) / hospital.capacity * 100).toFixed(1)}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading hospitals:', error);
+            }
+        }
+
+        // Load financial metrics
+        async function loadFinancialMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/financial-metrics`);
+                const data = await response.json();
+                
+                // Update revenue chart
+                if (charts.revenue && data.daily_revenue) {
+                    charts.revenue.data.labels = data.daily_revenue.map(d => 
+                        new Date(d.date).toLocaleDateString()
+                    ).slice(0, 30);
+                    charts.revenue.data.datasets[0].data = data.daily_revenue.map(d => 
+                        d.total_collected || 0
+                    ).slice(0, 30);
+                    charts.revenue.update();
+                }
+                
+                // Update outstanding amount
+                const outstanding = data.daily_revenue.reduce((sum, d) => 
+                    sum + (d.outstanding || 0), 0
+                );
+                document.getElementById('outstanding').textContent = `$${outstanding.toFixed(2)}`;
+                
+            } catch (error) {
+                console.error('Error loading financial metrics:', error);
+            }
+        }
+
+        // Load alerts
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/alerts/active`);
+                const alerts = await response.json();
+                
+                const alertsList = document.getElementById('alertsList');
+                alertsList.innerHTML = alerts.map(alert => `
+                    <div class="alert-card ${alert.severity}" onclick="showAlertDetails('${alert.alert_id}')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6>${alert.message}</h6>
+                                <small class="text-muted">${new Date(alert.created_at).toLocaleString()}</small>
+                            </div>
+                            <span class="badge bg-${alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'info'}">
+                                ${alert.severity}
+                            </span>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-muted">No active alerts</p>';
+                
+                // Update alert count
+                document.getElementById('alertCount').textContent = alerts.length;
+                
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+            }
+        }
+
+        // Load projects
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/projects`);
+                const projects = await response.json();
+                
+                const projectsList = document.getElementById('projectsList');
+                projectsList.innerHTML = projects.map(project => `
+                    <div class="project-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6>${project.project_name}</h6>
+                                <small class="text-muted">${project.hospital_name || 'All Hospitals'}</small>
+                            </div>
+                            <span class="badge bg-${project.priority === 'critical' ? 'danger' : project.priority === 'high' ? 'warning' : 'info'}">
+                                ${project.priority}
+                            </span>
+                        </div>
+                        <div class="progress-bar-custom">
+                            <div class="progress-bar-fill" style="width: ${project.progress || 0}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small>Progress: ${project.progress || 0}%</small>
+                            <small>Budget: $${(project.spent || 0).toFixed(2)} / $${(project.budget || 0).toFixed(2)}</small>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-muted">No active projects</p>';
+                
+                // Load project dashboard
+                loadProjectDashboard();
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Load project dashboard
+        async function loadProjectDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/projects/dashboard`);
+                const data = await response.json();
+                
+                // Display milestones
+                const milestonesList = document.getElementById('milestonesList');
+                milestonesList.innerHTML = data.upcoming_milestones.map(milestone => `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <strong>${milestone.task_name}</strong>
+                            <br>
+                            <small class="text-muted">Due: ${new Date(milestone.due_date).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-muted">No upcoming milestones</p>';
+                
+            } catch (error) {
+                console.error('Error loading project dashboard:', error);
+            }
+        }
+
+        // Show new project modal
+        function showNewProjectModal() {
+            const modal = new bootstrap.Modal(document.getElementById('projectModal'));
+            modal.show();
+        }
+
+        // Create project
+        async function createProject() {
+            const projectData = {
+                project_name: document.getElementById('projectName').value,
+                hospital_id: document.getElementById('projectHospital').value,
+                project_type: document.getElementById('projectType').value,
+                priority: document.getElementById('projectPriority').value,
+                budget: parseFloat(document.getElementById('projectBudget').value),
+                start_date: document.getElementById('projectStart').value,
+                end_date: document.getElementById('projectEnd').value,
+                project_manager: document.getElementById('projectManager').value,
+                description: document.getElementById('projectDescription').value,
+                status: 'planning'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/command-centre/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+                
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
+                    modal.hide();
+                    loadProjects();
+                    showNotification('Project created successfully', 'success');
+                }
+            } catch (error) {
+                console.error('Error creating project:', error);
+                showNotification('Failed to create project', 'error');
+            }
+        }
+
+        // Show alert details
+        function showAlertDetails(alertId) {
+            currentAlert = alertId;
+            // In production, fetch full alert details
+            const modal = new bootstrap.Modal(document.getElementById('alertModal'));
+            document.getElementById('alertDetails').innerHTML = `
+                <p>Alert ID: ${alertId}</p>
+                <p>Loading details...</p>
+            `;
+            modal.show();
+        }
+
+        // Acknowledge alert
+        async function acknowledgeAlert() {
+            if (!currentAlert) return;
+            
+            try {
+                await fetch(`${API_BASE}/api/command-centre/alerts/${currentAlert}/acknowledge`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ acknowledged_by: 'System Admin' })
+                });
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('alertModal'));
+                modal.hide();
+                loadAlerts();
+                showNotification('Alert acknowledged', 'success');
+            } catch (error) {
+                console.error('Error acknowledging alert:', error);
+            }
+        }
+
+        // Resolve alert
+        async function resolveAlert() {
+            if (!currentAlert) return;
+            
+            try {
+                await fetch(`${API_BASE}/api/command-centre/alerts/${currentAlert}/resolve`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resolution_notes: 'Resolved by admin' })
+                });
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('alertModal'));
+                modal.hide();
+                loadAlerts();
+                showNotification('Alert resolved', 'success');
+            } catch (error) {
+                console.error('Error resolving alert:', error);
+            }
+        }
+
+        // Refresh dashboard
+        function refreshDashboard() {
+            loadDashboard();
+            showNotification('Dashboard refreshed', 'info');
+        }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initWebSocket();
+            initCharts();
+            loadDashboard();
+            
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            // Refresh dashboard every 30 seconds
+            setInterval(loadDashboard, 30000);
+        });
+    </script>
+</body>
+</html>

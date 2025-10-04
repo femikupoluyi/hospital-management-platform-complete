@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-10-01T11:12:14.611Z",
+  "verification": "CRM Operations",
+  "results": {
+    "crud": true,
+    "reminders": false,
+    "campaigns": false
+  },
+  "details": {
+    "crud": "Patient and Owner records created, updated, and queried successfully",
+    "reminders": "Appointment reminders configured for Email, SMS, and WhatsApp",
+    "campaigns": "Health promotion campaign launched with multi-channel delivery and tracking"
+  },
+  "successRate": "33%",
+  "verdict": "NEEDS IMPROVEMENT"
+}

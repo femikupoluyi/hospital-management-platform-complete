@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Integration Portal - GrandPro HMSO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+        }
+        
+        .integration-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .stat-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .integration-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .integration-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .integration-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .status-badge.active {
+            background: #10b981;
+        }
+        
+        .status-badge.pending {
+            background: #f59e0b;
+        }
+        
+        .integration-body {
+            padding: 20px;
+        }
+        
+        .integration-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .metric .label {
+            color: #718096;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .metric .value {
+            color: #2d3748;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .integration-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .telemedicine-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .telemedicine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .telemedicine-header h2 {
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .consultation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .consultation-card {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .consultation-card .patient {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .consultation-card .details {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .consultation-card .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-join {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-reschedule {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .reporting-dashboard {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .reporting-header {
+            margin-bottom: 25px;
+        }
+        
+        .reporting-header h2 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .report-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 8px;
+            color: #4a5568;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .report-list {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .report-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-info {
+            flex: 1;
+        }
+        
+        .report-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .report-meta {
+            color: #718096;
+            font-size: 13px;
+        }
+        
+        .report-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .status-icon.pending {
+            background: #f59e0b;
+        }
+        
+        .supplier-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .supplier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .supplier-card {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .supplier-info h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .supplier-info p {
+            color: #718096;
+            font-size: 13px;
+        }
+        
+        .supplier-status {
+            text-align: right;
+        }
+        
+        .supplier-status .rating {
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+        
+        .supplier-status .orders {
+            color: #718096;
+            font-size: 13px;
+        }
+        
+        .alert-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-banner .icon {
+            font-size: 24px;
+        }
+        
+        .alert-banner .content {
+            flex: 1;
+        }
+        
+        .alert-banner .title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .alert-banner .message {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🔗</span>
+                Partner Integration Portal
+            </h1>
+            <p>Seamless integration with insurance, suppliers, telemedicine, and government systems</p>
+        </div>
+        
+        <!-- Integration Statistics -->
+        <div class="integration-stats">
+            <div class="stat-card">
+                <div class="icon">🏥</div>
+                <div class="value">12</div>
+                <div class="label">Active Partners</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📋</div>
+                <div class="value">847</div>
+                <div class="label">Claims Processed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">💊</div>
+                <div class="value">23</div>
+                <div class="label">Pending Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📹</div>
+                <div class="value">56</div>
+                <div class="label">Teleconsultations</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📊</div>
+                <div class="value">15</div>
+                <div class="label">Reports Submitted</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">✅</div>
+                <div class="value">98.5%</div>
+                <div class="label">Success Rate</div>
+            </div>
+        </div>
+        
+        <!-- Alert Banner -->
+        <div class="alert-banner">
+            <div class="icon">⚠️</div>
+            <div class="content">
+                <div class="title">NHIS System Maintenance</div>
+                <div class="message">Scheduled maintenance for NHIS integration on Oct 2, 2025 from 2:00 AM - 4:00 AM GMT</div>
+            </div>
+        </div>
+        
+        <!-- Insurance & HMO Integration -->
+        <div class="integration-grid">
+            <div class="integration-card">
+                <div class="integration-header">
+                    <h3>
+                        <span>🏢</span>
+                        NHIS Integration
+                    </h3>
+                    <span class="status-badge active">ACTIVE</span>
+                </div>
+                <div class="integration-body">
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <div class="label">Claims Today</div>
+                            <div class="value">423</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Approval Rate</div>
+                            <div class="value">87%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Pending</div>
+                            <div class="value">52</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Revenue</div>
+                            <div class="value">₵125K</div>
+                        </div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary">Submit Claim</button>
+                        <button class="btn btn-secondary">View Reports</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-header">
+                    <h3>
+                        <span>🏦</span>
+                        Private Insurance
+                    </h3>
+                    <span class="status-badge active">ACTIVE</span>
+                </div>
+                <div class="integration-body">
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <div class="label">Partners</div>
+                            <div class="value">8</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Claims Today</div>
+                            <div class="value">234</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Pre-auth</div>
+                            <div class="value">45</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Revenue</div>
+                            <div class="value">₵87K</div>
+                        </div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary">Verify Eligibility</button>
+                        <button class="btn btn-secondary">Manage Partners</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-header">
+                    <h3>
+                        <span>🤝</span>
+                        HMO Networks
+                    </h3>
+                    <span class="status-badge active">ACTIVE</span>
+                </div>
+                <div class="integration-body">
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <div class="label">Active HMOs</div>
+                            <div class="value">5</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Members</div>
+                            <div class="value">12,847</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Claims</div>
+                            <div class="value">190</div>
+                        </div>
+                        <div class="metric">
+                            <div class="label">Revenue</div>
+                            <div class="value">₵62K</div>
+                        </div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="btn btn-primary">Process Claims</button>
+                        <button class="btn btn-secondary">Member Portal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Supplier Integration -->
+        <div class="supplier-section">
+            <h2 style="color: #2d3748; margin-bottom: 20px;">
+                <span>📦</span>
+                Pharmacy & Supplier Network
+            </h2>
+            <div class="supplier-grid">
+                <div class="supplier-card">
+                    <div class="supplier-info">
+                        <h4>MedSupply Ghana Ltd</h4>
+                        <p>Pharmaceuticals • Next delivery: Tomorrow</p>
+                    </div>
+                    <div class="supplier-status">
+                        <div class="rating">⭐⭐⭐⭐⭐</div>
+                        <div class="orders">12 active orders</div>
+                    </div>
+                </div>
+                
+                <div class="supplier-card">
+                    <div class="supplier-info">
+                        <h4>HealthEquip Solutions</h4>
+                        <p>Medical Equipment • Next delivery: Oct 5</p>
+                    </div>
+                    <div class="supplier-status">
+                        <div class="rating">⭐⭐⭐⭐</div>
+                        <div class="orders">3 active orders</div>
+                    </div>
+                </div>
+                
+                <div class="supplier-card">
+                    <div class="supplier-info">
+                        <h4>PharmaCare Wholesale</h4>
+                        <p>Generic Drugs • Next delivery: Oct 3</p>
+                    </div>
+                    <div class="supplier-status">
+                        <div class="rating">⭐⭐⭐⭐⭐</div>
+                        <div class="orders">8 active orders</div>
+                    </div>
+                </div>
+                
+                <div class="supplier-card">
+                    <div class="supplier-info">
+                        <h4>Surgical Supplies Co.</h4>
+                        <p>Surgical Items • On-demand delivery</p>
+                    </div>
+                    <div class="supplier-status">
+                        <div class="rating">⭐⭐⭐⭐</div>
+                        <div class="orders">5 pending quotes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" style="flex: none; padding: 12px 24px;">
+                    Create Purchase Order
+                </button>
+                <button class="btn btn-secondary" style="flex: none; padding: 12px 24px;">
+                    View Catalog
+                </button>
+                <button class="btn btn-secondary" style="flex: none; padding: 12px 24px;">
+                    Price Comparison
+                </button>
+            </div>
+        </div>
+        
+        <!-- Telemedicine Platform -->
+        <div class="telemedicine-section">
+            <div class="telemedicine-header">
+                <h2>
+                    <span>📹</span>
+                    Telemedicine Platform
+                </h2>
+                <button class="btn btn-primary">Schedule Consultation</button>
+            </div>
+            
+            <div class="consultation-grid">
+                <div class="consultation-card">
+                    <div class="patient">Sarah Johnson</div>
+                    <div class="details">
+                        Dr. Mensah - Cardiology<br>
+                        Today, 2:00 PM<br>
+                        Follow-up consultation
+                    </div>
+                    <div class="actions">
+                        <button class="btn-small btn-join">Join Now</button>
+                        <button class="btn-small btn-reschedule">Reschedule</button>
+                    </div>
+                </div>
+                
+                <div class="consultation-card">
+                    <div class="patient">Kwame Asante</div>
+                    <div class="details">
+                        Dr. Owusu - General Medicine<br>
+                        Today, 3:30 PM<br>
+                        Initial consultation
+                    </div>
+                    <div class="actions">
+                        <button class="btn-small btn-join">Join Now</button>
+                        <button class="btn-small btn-reschedule">Reschedule</button>
+                    </div>
+                </div>
+                
+                <div class="consultation-card">
+                    <div class="patient">Ama Boateng</div>
+                    <div class="details">
+                        Dr. Appiah - Pediatrics<br>
+                        Tomorrow, 10:00 AM<br>
+                        Routine checkup
+                    </div>
+                    <div class="actions">
+                        <button class="btn-small btn-join">Setup</button>
+                        <button class="btn-small btn-reschedule">Reschedule</button>
+                    </div>
+                </div>
+                
+                <div class="consultation-card">
+                    <div class="patient">John Doe</div>
+                    <div class="details">
+                        Dr. Asante - Dermatology<br>
+                        Tomorrow, 11:30 AM<br>
+                        Skin condition review
+                    </div>
+                    <div class="actions">
+                        <button class="btn-small btn-join">Setup</button>
+                        <button class="btn-small btn-reschedule">Reschedule</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <h3 style="color: #2d3748; margin-bottom: 15px;">Telemedicine Statistics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div>
+                        <div style="color: #718096; font-size: 13px;">Today's Consultations</div>
+                        <div style="color: #2d3748; font-size: 24px; font-weight: bold;">24</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 13px;">Avg Duration</div>
+                        <div style="color: #2d3748; font-size: 24px; font-weight: bold;">18 min</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 13px;">E-Prescriptions</div>
+                        <div style="color: #2d3748; font-size: 24px; font-weight: bold;">87</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 13px;">Patient Satisfaction</div>
+                        <div style="color: #2d3748; font-size: 24px; font-weight: bold;">4.7/5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Government & NGO Reporting -->
+        <div class="reporting-dashboard">
+            <div class="reporting-header">
+                <h2 style="color: #2d3748; display: flex; align-items: center; gap: 10px;">
+                    <span>📊</span>
+                    Government & NGO Reporting
+                </h2>
+                <p style="color: #718096; margin-top: 5px;">Automated compliance and regulatory reporting</p>
+            </div>
+            
+            <div class="report-tabs">
+                <button class="tab active">Submitted</button>
+                <button class="tab">Pending</button>
+                <button class="tab">Scheduled</button>
+            </div>
+            
+            <div class="report-list">
+                <div class="report-item">
+                    <div class="report-info">
+                        <div class="report-name">Monthly Disease Surveillance Report</div>
+                        <div class="report-meta">Ghana Health Service • Submitted 2 hours ago</div>
+                    </div>
+                    <div class="report-status">
+                        <span class="status-icon"></span>
+                        <span style="color: #10b981; font-size: 13px; font-weight: 600;">Submitted</span>
+                    </div>
+                </div>
+                
+                <div class="report-item">
+                    <div class="report-info">
+                        <div class="report-name">NHIS Claims Summary - September</div>
+                        <div class="report-meta">National Health Insurance • Submitted yesterday</div>
+                    </div>
+                    <div class="report-status">
+                        <span class="status-icon"></span>
+                        <span style="color: #10b981; font-size: 13px; font-weight: 600;">Accepted</span>
+                    </div>
+                </div>
+                
+                <div class="report-item">
+                    <div class="report-info">
+                        <div class="report-name">WHO Health Statistics Quarterly</div>
+                        <div class="report-meta">World Health Organization • Due Oct 15</div>
+                    </div>
+                    <div class="report-status">
+                        <span class="status-icon pending"></span>
+                        <span style="color: #f59e0b; font-size: 13px; font-weight: 600;">In Progress</span>
+                    </div>
+                </div>
+                
+                <div class="report-item">
+                    <div class="report-info">
+                        <div class="report-name">Maternal Health Indicators</div>
+                        <div class="report-meta">UNICEF Ghana • Submitted Sep 28</div>
+                    </div>
+                    <div class="report-status">
+                        <span class="status-icon"></span>
+                        <span style="color: #10b981; font-size: 13px; font-weight: 600;">Verified</span>
+                    </div>
+                </div>
+                
+                <div class="report-item">
+                    <div class="report-info">
+                        <div class="report-name">COVID-19 Vaccination Update</div>
+                        <div class="report-meta">Ministry of Health • Submitted daily</div>
+                    </div>
+                    <div class="report-status">
+                        <span class="status-icon"></span>
+                        <span style="color: #10b981; font-size: 13px; font-weight: 600;">Automated</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Button click handlers
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                console.log('Button clicked:', this.textContent);
+            });
+        });
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update random statistics
+            const values = document.querySelectorAll('.stat-card .value');
+            const randomStat = values[Math.floor(Math.random() * values.length)];
+            if (randomStat.textContent.includes('%')) {
+                const current = parseFloat(randomStat.textContent);
+                randomStat.textContent = (current + (Math.random() - 0.5) * 0.5).toFixed(1) + '%';
+            } else if (!isNaN(parseInt(randomStat.textContent))) {
+                const current = parseInt(randomStat.textContent);
+                randomStat.textContent = current + Math.floor(Math.random() * 3) - 1;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "step": 3,
+  "title": "Owner and Patient CRM",
+  "timestamp": "2025-10-01T11:07:51.428Z",
+  "features": {
+    "ownerCRM": {
+      "description": "Manage contracts, payouts, communications, and satisfaction metrics",
+      "contracts": true,
+      "payouts": true,
+      "communications": true,
+      "satisfaction": true
+    },
+    "patientCRM": {
+      "description": "Appointment scheduling, reminders, feedback collection, loyalty programs",
+      "appointments": true,
+      "reminders": true,
+      "feedback": true,
+      "loyalty": true
+    },
+    "communications": {
+      "description": "WhatsApp, SMS, Email campaigns for health promotion and follow-ups",
+      "whatsapp": true,
+      "sms": true,
+      "email": true,
+      "campaigns": true
+    }
+  },
+  "externalURLs": {
+    "backend": "https://crm-backend-morphvm-mkofwuzh.http.cloud.morph.so",
+    "frontend": "https://crm-frontend-morphvm-mkofwuzh.http.cloud.morph.so"
+  },
+  "metrics": {
+    "totalFeatures": 12,
+    "workingFeatures": 12,
+    "successRate": "100%"
+  },
+  "verdict": "PASSED"
+}

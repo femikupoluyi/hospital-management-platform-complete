@@ -1,0 +1,268 @@
+{
+  "timestamp": "2025-10-04T18:52:32.630Z",
+  "modules": {
+    "onboarding": {
+      "name": "Digital Sourcing & Partner Onboarding",
+      "tests": [
+        {
+          "name": "Submit Hospital Application",
+          "endpoint": "http://localhost:6000/api/applications",
+          "method": "POST",
+          "status": 404,
+          "success": false
+        },
+        {
+          "name": "Generate Contract",
+          "endpoint": "http://localhost:6000/api/contracts/generate",
+          "method": "POST",
+          "status": 404,
+          "success": false
+        },
+        {
+          "name": "View Dashboard",
+          "endpoint": "http://localhost:6000/api/dashboard",
+          "method": "GET",
+          "status": 404,
+          "success": false
+        }
+      ],
+      "passed": 0,
+      "failed": 3
+    },
+    "crm": {
+      "name": "CRM & Relationship Management",
+      "tests": [
+        {
+          "name": "Create Patient",
+          "endpoint": "http://localhost:7002/api/patients",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Schedule Appointment",
+          "endpoint": "http://localhost:7002/api/appointments",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Create Campaign",
+          "endpoint": "http://localhost:7002/api/campaigns",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Check Loyalty Points",
+          "endpoint": "http://localhost:7002/api/loyalty/points/PAT001",
+          "method": "GET",
+          "status": 404,
+          "success": false
+        }
+      ],
+      "passed": 0,
+      "failed": 4
+    },
+    "hms": {
+      "name": "Hospital Management SaaS",
+      "tests": [
+        {
+          "name": "Create Medical Record",
+          "endpoint": "http://localhost:5801/api/medical-records",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Create Invoice",
+          "endpoint": "http://localhost:5801/api/billing/create-invoice",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Update Inventory",
+          "endpoint": "http://localhost:5801/api/inventory/stock-entry",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Add Staff Schedule",
+          "endpoint": "http://localhost:5801/api/staff/add-schedule",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Admit Patient",
+          "endpoint": "http://localhost:5801/api/beds/admit",
+          "method": "POST",
+          "status": 500,
+          "success": false
+        },
+        {
+          "name": "Get Analytics Dashboard",
+          "endpoint": "http://localhost:5801/api/analytics/dashboard",
+          "method": "GET",
+          "status": 500,
+          "success": false
+        }
+      ],
+      "passed": 0,
+      "failed": 6
+    },
+    "occ": {
+      "name": "Operations Command Centre",
+      "tests": [
+        {
+          "name": "Get Monitoring Status",
+          "endpoint": "http://localhost:8080/api/monitoring/status",
+          "method": "GET",
+          "status": 404,
+          "success": false
+        },
+        {
+          "name": "Get Dashboard Metrics",
+          "endpoint": "http://localhost:8080/api/dashboards/metrics",
+          "method": "GET",
+          "status": 404,
+          "success": false
+        },
+        {
+          "name": "Create Alert",
+          "endpoint": "http://localhost:8080/api/alerts",
+          "method": "POST",
+          "status": 404,
+          "success": false
+        },
+        {
+          "name": "Create Project",
+          "endpoint": "http://localhost:8080/api/projects",
+          "method": "POST",
+          "status": 404,
+          "success": false
+        }
+      ],
+      "passed": 0,
+      "failed": 4
+    },
+    "partner": {
+      "name": "Partner & Ecosystem Integrations",
+      "tests": [
+        {
+          "name": "Submit Insurance Claim",
+          "endpoint": "http://localhost:9000/api/insurance/claims",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9000"
+        },
+        {
+          "name": "Create Pharmacy Order",
+          "endpoint": "http://localhost:9000/api/pharmacy/orders",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9000"
+        },
+        {
+          "name": "Schedule Telemedicine",
+          "endpoint": "http://localhost:9000/api/telemedicine/sessions",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9000"
+        },
+        {
+          "name": "Generate Compliance Report",
+          "endpoint": "http://localhost:9000/api/compliance/reports",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9000"
+        }
+      ],
+      "passed": 0,
+      "failed": 4
+    },
+    "analytics": {
+      "name": "Data & Analytics",
+      "tests": [
+        {
+          "name": "Get Data Lake Status",
+          "endpoint": "http://localhost:9500/api/data-lake/status",
+          "method": "GET",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9500"
+        },
+        {
+          "name": "Get Predictions",
+          "endpoint": "http://localhost:9500/api/analytics/predictions",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9500"
+        },
+        {
+          "name": "Run Triage Bot",
+          "endpoint": "http://localhost:9501/api/ml/triage",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9501"
+        },
+        {
+          "name": "Fraud Detection",
+          "endpoint": "http://localhost:9501/api/ml/fraud-detection",
+          "method": "POST",
+          "status": 0,
+          "success": false,
+          "error": "connect ECONNREFUSED 127.0.0.1:9501"
+        }
+      ],
+      "passed": 0,
+      "failed": 4
+    }
+  },
+  "totalTests": 25,
+  "passed": 0,
+  "failed": 25,
+  "errors": [],
+  "exposedUrls": [
+    {
+      "name": "HMS Portal",
+      "url": "https://hms-portal-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": true
+    },
+    {
+      "name": "OCC Dashboard",
+      "url": "https://occ-dashboard-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": false,
+      "error": "Request timeout"
+    },
+    {
+      "name": "Analytics Dashboard",
+      "url": "https://analytics-dashboard-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": false,
+      "error": "Request timeout"
+    },
+    {
+      "name": "Onboarding Portal",
+      "url": "https://onboarding-portal-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": false
+    },
+    {
+      "name": "CRM Portal",
+      "url": "https://crm-portal-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": false
+    },
+    {
+      "name": "Partner API",
+      "url": "https://partner-api-morphvm-mkofwuzh.http.cloud.morph.so",
+      "accessible": false
+    }
+  ]
+}

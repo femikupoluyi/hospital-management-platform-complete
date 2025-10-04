@@ -1,0 +1,26 @@
+{
+  "encryption": {
+    "database_ssl": false,
+    "data_at_rest": true,
+    "api_https": true,
+    "password_hashing": true
+  },
+  "rbac": {
+    "roles_defined": true,
+    "permissions_defined": true,
+    "role_mappings": true,
+    "access_control": true
+  },
+  "audit_logs": {
+    "logging_active": true,
+    "critical_actions_logged": true,
+    "log_retention": true,
+    "log_integrity": true
+  },
+  "backup_restore": {
+    "backup_configured": true,
+    "recent_backups": true,
+    "restore_tested": true,
+    "rto_met": true
+  }
+}

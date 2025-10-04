@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Command Centre - GrandPro HMSO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1419;
+            color: #e1e8ed;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            padding: 20px;
+            border-bottom: 2px solid #00d4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header .status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid #00d4ff;
+        }
+        
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+        
+        .dashboard {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(145deg, #1a1f2e, #151922);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+        }
+        
+        .metric-card.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .metric-card.half-width {
+            grid-column: span 2;
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .metric-title {
+            font-size: 16px;
+            color: #8899a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin: 10px 0;
+        }
+        
+        .metric-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .positive {
+            color: #00ff88;
+        }
+        
+        .negative {
+            color: #ff4757;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+        }
+        
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .hospital-card {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .hospital-name {
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .hospital-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .alert-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .alert-item {
+            background: rgba(255, 71, 87, 0.1);
+            border-left: 4px solid #ff4757;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .alert-item.warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: #ffc107;
+        }
+        
+        .alert-item.info {
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #8899a6;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-resolve {
+            background: #00ff88;
+            color: #0f1419;
+        }
+        
+        .btn-resolve:hover {
+            background: #00cc6e;
+        }
+        
+        .project-list {
+            margin-top: 15px;
+        }
+        
+        .project-item {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .project-name {
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .project-status {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .status-planning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .status-in_progress {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+        
+        .status-completed {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            transition: width 0.5s ease;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #8899a6;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab.active {
+            color: #00d4ff;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00d4ff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border-radius: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: linear-gradient(145deg, #1a1f2e, #151922);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #8899a6;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #1a1f2e;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #00d4ff;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            color: #00d4ff;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #8899a6;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #8899a6;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 5px;
+            color: #e1e8ed;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #0f1419;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1f2e;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00a8cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            🏥 Operations Command Centre
+            <span class="live-indicator">LIVE</span>
+        </h1>
+        <div class="status">
+            <div class="status-indicator">
+                <div class="pulse"></div>
+                <span id="wsStatus">Connected</span>
+            </div>
+            <div class="status-indicator">
+                <span id="currentTime">00:00:00</span>
+            </div>
+            <div class="status-indicator">
+                <span id="hospitalCount">0 Hospitals</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Overview Metrics -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Total Patient Inflow</span>
+                <span class="live-indicator">LIVE</span>
+            </div>
+            <div class="metric-value" id="totalPatientInflow">0</div>
+            <div class="metric-change positive">
+                <span>↑ 12% from yesterday</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Total Admissions</span>
+                <span class="live-indicator">LIVE</span>
+            </div>
+            <div class="metric-value" id="totalAdmissions">0</div>
+            <div class="metric-change positive">
+                <span>↑ 8% from yesterday</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Average Bed Occupancy</span>
+                <span class="live-indicator">LIVE</span>
+            </div>
+            <div class="metric-value" id="avgOccupancy">0%</div>
+            <div class="metric-change negative">
+                <span>↓ 2% from yesterday</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">Daily Revenue</span>
+                <span class="live-indicator">LIVE</span>
+            </div>
+            <div class="metric-value" id="dailyRevenue">₦0</div>
+            <div class="metric-change positive">
+                <span>↑ 15% from target</span>
+            </div>
+        </div>
+
+        <!-- Hospital Performance Grid -->
+        <div class="metric-card full-width">
+            <div class="metric-header">
+                <span class="metric-title">Hospital Performance Matrix</span>
+                <button class="btn" onclick="refreshHospitalData()">Refresh</button>
+            </div>
+            <div class="hospital-grid" id="hospitalGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="metric-card half-width">
+            <div class="metric-header">
+                <span class="metric-title">Active Alerts & Anomalies</span>
+                <span id="alertCount" style="background: #ff4757; padding: 2px 8px; border-radius: 10px;">0</span>
+            </div>
+            <div class="alert-container" id="alertContainer">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Project Management -->
+        <div class="metric-card half-width">
+            <div class="metric-header">
+                <span class="metric-title">Active Projects</span>
+                <button class="btn btn-primary" onclick="showNewProjectModal()">New Project</button>
+            </div>
+            <div class="project-list" id="projectList">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Staff KPIs -->
+        <div class="metric-card full-width">
+            <div class="metric-header">
+                <span class="metric-title">Staff Performance KPIs</span>
+            </div>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('staff-overview')">Overview</button>
+                <button class="tab" onclick="switchTab('staff-departments')">By Department</button>
+                <button class="tab" onclick="switchTab('staff-productivity')">Productivity</button>
+            </div>
+            <div id="staff-overview" class="tab-content active">
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Staff</div>
+                        <div class="stat-number" id="totalStaff">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Present Today</div>
+                        <div class="stat-number" id="presentStaff">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Avg Patients/Staff</div>
+                        <div class="stat-number" id="patientsPerStaff">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Satisfaction Score</div>
+                        <div class="stat-number" id="satisfactionScore">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div id="staff-departments" class="tab-content">
+                <div id="departmentStats">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+            <div id="staff-productivity" class="tab-content">
+                <div id="productivityStats">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Metrics -->
+        <div class="metric-card full-width">
+            <div class="metric-header">
+                <span class="metric-title">Financial Performance</span>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-number" id="monthlyRevenue">₦0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Pending Payments</div>
+                    <div class="stat-number" id="pendingPayments">₦0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Insurance Claims</div>
+                    <div class="stat-number" id="insuranceClaims">₦0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Profit Margin</div>
+                    <div class="stat-number" id="profitMargin">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Project Modal -->
+    <div id="newProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Project</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="newProjectForm">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="projectName" required>
+                </div>
+                <div class="form-group">
+                    <label>Project Type</label>
+                    <select id="projectType">
+                        <option value="expansion">Expansion</option>
+                        <option value="renovation">Renovation</option>
+                        <option value="it_upgrade">IT Upgrade</option>
+                        <option value="equipment">Equipment Purchase</option>
+                        <option value="training">Training Program</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hospital</label>
+                    <select id="projectHospital">
+                        <option value="hosp-001">Lagos General Hospital</option>
+                        <option value="hosp-002">Abuja Medical Center</option>
+                        <option value="hosp-003">Port Harcourt Specialist Hospital</option>
+                        <option value="hosp-004">Kano Teaching Hospital</option>
+                        <option value="hosp-005">Ibadan Central Hospital</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="projectPriority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Budget (₦)</label>
+                    <input type="number" id="projectBudget" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="projectDescription"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Create Project</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let ws = null;
+        let dashboardData = {};
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:9002/api'
+            : `http://${window.location.hostname}:9002/api`;
+
+        // Initialize WebSocket connection
+        function connectWebSocket() {
+            const wsUrl = window.location.hostname === 'localhost'
+                ? 'ws://localhost:9002'
+                : `ws://${window.location.hostname}:9002`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('wsStatus').textContent = 'Connected';
+                document.getElementById('wsStatus').style.color = '#00ff88';
+            };
+            
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                document.getElementById('wsStatus').textContent = 'Disconnected';
+                document.getElementById('wsStatus').style.color = '#ff4757';
+                // Reconnect after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+            };
+            
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleWebSocketMessage(message);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(message) {
+            console.log('WebSocket message:', message);
+            
+            switch(message.type) {
+                case 'initial':
+                case 'metrics_update':
+                    updateDashboard(message.data);
+                    break;
+                case 'new_alert':
+                    addAlert(message.data);
+                    break;
+                case 'alert_resolved':
+                    removeAlert(message.data.id);
+                    break;
+                case 'new_project':
+                case 'project_updated':
+                    loadProjects();
+                    break;
+            }
+        }
+
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            dashboardData = data;
+            
+            // Update overview metrics
+            if (data.overview) {
+                document.getElementById('totalPatientInflow').textContent = 
+                    formatNumber(data.overview.total_patient_inflow || 0);
+                document.getElementById('totalAdmissions').textContent = 
+                    formatNumber(data.overview.total_admissions || 0);
+                document.getElementById('avgOccupancy').textContent = 
+                    `${parseFloat(data.overview.avg_bed_occupancy || 0).toFixed(1)}%`;
+                document.getElementById('dailyRevenue').textContent = 
+                    `₦${formatCurrency(data.overview.total_revenue_today || 0)}`;
+                document.getElementById('hospitalCount').textContent = 
+                    `${data.overview.total_hospitals || 0} Hospitals`;
+            }
+            
+            // Update hospital grid
+            if (data.hospitals) {
+                updateHospitalGrid(data.hospitals);
+            }
+            
+            // Update alerts
+            if (data.alerts) {
+                updateAlerts(data.alerts);
+            }
+            
+            // Update projects
+            if (data.projects) {
+                updateProjects(data.projects);
+            }
+            
+            // Update staff KPIs
+            if (data.staffKPIs) {
+                document.getElementById('totalStaff').textContent = 
+                    formatNumber(data.staffKPIs.total_staff || 0);
+                document.getElementById('presentStaff').textContent = 
+                    formatNumber(data.staffKPIs.total_present || 0);
+                document.getElementById('patientsPerStaff').textContent = 
+                    parseFloat(data.staffKPIs.avg_patients_per_staff || 0).toFixed(1);
+                document.getElementById('satisfactionScore').textContent = 
+                    `${parseFloat(data.staffKPIs.avg_satisfaction || 0).toFixed(1)}%`;
+            }
+            
+            // Update financial metrics
+            if (data.financial) {
+                document.getElementById('monthlyRevenue').textContent = 
+                    `₦${formatCurrency(data.financial.total_monthly_revenue || 0)}`;
+                document.getElementById('pendingPayments').textContent = 
+                    `₦${formatCurrency(data.financial.total_pending || 0)}`;
+                document.getElementById('insuranceClaims').textContent = 
+                    `₦${formatCurrency(data.financial.total_claims || 0)}`;
+                document.getElementById('profitMargin').textContent = 
+                    `${parseFloat(data.financial.avg_profit_margin || 0).toFixed(1)}%`;
+            }
+        }
+
+        // Update hospital grid
+        function updateHospitalGrid(hospitals) {
+            const grid = document.getElementById('hospitalGrid');
+            grid.innerHTML = hospitals.map(hospital => `
+                <div class="hospital-card">
+                    <div class="hospital-name">${hospital.hospital_name}</div>
+                    <div class="hospital-stat">
+                        <span>Patient Inflow:</span>
+                        <span>${hospital.patient_inflow}</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Admissions:</span>
+                        <span>${hospital.admissions}</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Bed Occupancy:</span>
+                        <span style="color: ${hospital.bed_occupancy > 90 ? '#ff4757' : '#00ff88'}">
+                            ${parseFloat(hospital.bed_occupancy).toFixed(1)}%
+                        </span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Wait Time:</span>
+                        <span>${hospital.average_wait_time} min</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Revenue:</span>
+                        <span>₦${formatCurrency(hospital.revenue_today)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update alerts
+        function updateAlerts(alerts) {
+            const container = document.getElementById('alertContainer');
+            document.getElementById('alertCount').textContent = alerts.length;
+            
+            container.innerHTML = alerts.map(alert => `
+                <div class="alert-item ${getSeverityClass(alert.severity)}">
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.message}</div>
+                        <div class="alert-time">${alert.hospital_name} - ${formatTime(alert.created_at)}</div>
+                    </div>
+                    <button class="btn btn-resolve" onclick="resolveAlert(${alert.id})">Resolve</button>
+                </div>
+            `).join('');
+        }
+
+        // Update projects
+        function updateProjects(projects) {
+            const container = document.getElementById('projectList');
+            container.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <div class="project-header">
+                        <span class="project-name">${project.project_name}</span>
+                        <span class="project-status status-${project.status}">${project.status}</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Hospital:</span>
+                        <span>${project.hospital_name}</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Budget:</span>
+                        <span>₦${formatCurrency(project.budget)}</span>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Spent:</span>
+                        <span>₦${formatCurrency(project.spent)}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress}%"></div>
+                    </div>
+                    <div class="hospital-stat">
+                        <span>Progress:</span>
+                        <span>${project.progress}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Resolve alert
+        async function resolveAlert(alertId) {
+            try {
+                const response = await fetch(`${API_URL}/alerts/${alertId}/resolve`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ resolved_by: 'OCC Operator' })
+                });
+                
+                if (response.ok) {
+                    console.log('Alert resolved');
+                }
+            } catch (error) {
+                console.error('Error resolving alert:', error);
+            }
+        }
+
+        // Load initial data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${API_URL}/dashboard/comprehensive`);
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Load projects
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${API_URL}/projects`);
+                const projects = await response.json();
+                updateProjects(projects);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Show new project modal
+        function showNewProjectModal() {
+            document.getElementById('newProjectModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('newProjectModal').style.display = 'none';
+        }
+
+        // Handle new project form
+        document.getElementById('newProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const hospitalSelect = document.getElementById('projectHospital');
+            const projectData = {
+                project_name: document.getElementById('projectName').value,
+                project_type: document.getElementById('projectType').value,
+                hospital_id: hospitalSelect.value,
+                hospital_name: hospitalSelect.options[hospitalSelect.selectedIndex].text,
+                priority: document.getElementById('projectPriority').value,
+                budget: parseFloat(document.getElementById('projectBudget').value),
+                description: document.getElementById('projectDescription').value,
+                status: 'planning',
+                start_date: new Date().toISOString().split('T')[0],
+                end_date: new Date(Date.now() + 180*24*60*60*1000).toISOString().split('T')[0]
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/projects`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(projectData)
+                });
+                
+                if (response.ok) {
+                    closeModal();
+                    document.getElementById('newProjectForm').reset();
+                    loadProjects();
+                }
+            } catch (error) {
+                console.error('Error creating project:', error);
+            }
+        });
+
+        // Switch tabs
+        function switchTab(tabId) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Refresh hospital data
+        function refreshHospitalData() {
+            loadDashboardData();
+        }
+
+        // Utility functions
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat().format(Math.round(num));
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            
+            if (minutes < 60) {
+                return `${minutes} min ago`;
+            } else if (minutes < 1440) {
+                return `${Math.floor(minutes / 60)} hours ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        function getSeverityClass(severity) {
+            switch(severity) {
+                case 'critical':
+                case 'high':
+                    return '';
+                case 'medium':
+                    return 'warning';
+                default:
+                    return 'info';
+            }
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleTimeString('en-US', { hour12: false });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            connectWebSocket();
+            loadDashboardData();
+            loadProjects();
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('newProjectModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>

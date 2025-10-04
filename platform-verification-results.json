@@ -1,0 +1,212 @@
+{
+  "timestamp": "2025-10-01T10:30:22.704Z",
+  "modules": {
+    "Unified Frontend": {
+      "internal": {
+        "accessible": false,
+        "endpoints": {
+          "/": {
+            "status": 404,
+            "success": false
+          }
+        }
+      },
+      "external": {
+        "accessible": true,
+        "url": "https://unified-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 200
+      }
+    },
+    "Hospital Onboarding": {
+      "internal": {
+        "accessible": true,
+        "endpoints": {
+          "/api/health": {
+            "status": 200,
+            "success": true
+          },
+          "/api/applications": {
+            "status": 200,
+            "success": true
+          },
+          "/api/dashboard": {
+            "status": 200,
+            "success": true
+          }
+        }
+      },
+      "external": {
+        "accessible": false,
+        "url": "https://hospital-onboarding-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 404
+      }
+    },
+    "HMS Module": {
+      "internal": {
+        "accessible": true,
+        "endpoints": {
+          "/": {
+            "status": 200,
+            "success": true
+          }
+        }
+      },
+      "external": {
+        "accessible": true,
+        "url": "https://hms-module-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 200
+      }
+    },
+    "API Documentation": {
+      "internal": {
+        "accessible": false,
+        "endpoints": {
+          "/": {
+            "status": 404,
+            "success": false
+          }
+        }
+      },
+      "external": {
+        "accessible": true,
+        "url": "https://api-documentation-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 200
+      }
+    },
+    "OCC Dashboard": {
+      "internal": {
+        "accessible": true,
+        "endpoints": {
+          "/": {
+            "status": 200,
+            "success": true
+          }
+        }
+      },
+      "external": {
+        "accessible": false,
+        "url": "https://occ-dashboard-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": "TIMEOUT"
+      }
+    },
+    "Partner Integration": {
+      "internal": {
+        "accessible": true,
+        "endpoints": {
+          "/": {
+            "status": 200,
+            "success": true
+          }
+        }
+      },
+      "external": {
+        "accessible": true,
+        "url": "https://partner-integration-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 200
+      }
+    },
+    "Analytics ML": {
+      "internal": {
+        "accessible": false,
+        "endpoints": {
+          "/api/analytics/metrics": {
+            "status": 404,
+            "success": false
+          }
+        }
+      },
+      "external": {
+        "accessible": false,
+        "url": "https://analytics-ml-morphvm-mkofwuzh.http.cloud.morph.so",
+        "status": 404
+      }
+    }
+  },
+  "database": {
+    "connected": true,
+    "host": "ep-steep-river-ad25brti-pooler.c-2.us-east-1.aws.neon.tech",
+    "database": "neondb",
+    "project": "snowy-bird-64526166",
+    "table_count": 88,
+    "schema_count": 15,
+    "schemas": [
+      "analytics",
+      "api_security",
+      "backup_recovery",
+      "billing",
+      "communications",
+      "crm",
+      "emr",
+      "hr",
+      "inventory",
+      "loyalty",
+      "onboarding",
+      "organization",
+      "partner_ecosystem",
+      "security",
+      "system"
+    ]
+  },
+  "summary": {
+    "total_modules": 7,
+    "working_internally": 4,
+    "working_externally": 4,
+    "fully_operational": 2
+  },
+  "processes": [
+    {
+      "name": "hospital-app",
+      "status": "online",
+      "restarts": 38,
+      "memory": "60MB"
+    },
+    {
+      "name": "hospital-backend",
+      "status": "online",
+      "restarts": 3,
+      "memory": "69MB"
+    },
+    {
+      "name": "api-docs",
+      "status": "online",
+      "restarts": 1,
+      "memory": "56MB"
+    },
+    {
+      "name": "hms-module",
+      "status": "online",
+      "restarts": 0,
+      "memory": "63MB"
+    },
+    {
+      "name": "partner-integration",
+      "status": "online",
+      "restarts": 0,
+      "memory": "61MB"
+    },
+    {
+      "name": "occ-enhanced",
+      "status": "online",
+      "restarts": 2,
+      "memory": "60MB"
+    },
+    {
+      "name": "main-frontend",
+      "status": "online",
+      "restarts": 0,
+      "memory": "65MB"
+    },
+    {
+      "name": "analytics-ml",
+      "status": "online",
+      "restarts": 0,
+      "memory": "60MB"
+    },
+    {
+      "name": "unified-frontend",
+      "status": "online",
+      "restarts": 1,
+      "memory": "58MB"
+    }
+  ]
+}

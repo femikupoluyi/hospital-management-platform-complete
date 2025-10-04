@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Sourcing & Partner Onboarding Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f7fafc;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 12px;
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-label:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f7fafc;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .applications-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .applications-table th {
+            background: #f7fafc;
+            padding: 12px;
+            text-align: left;
+            color: #4a5568;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .applications-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #feebc8; color: #744210; }
+        .status-approved { background: #c6f6d5; color: #22543d; }
+        .status-rejected { background: #fed7d7; color: #742a2a; }
+        .status-onboarded { background: #bee3f8; color: #2c5282; }
+
+        .score-display {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .evaluation-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .evaluation-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .signature-pad {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            margin: 20px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 15px;
+            width: 1px;
+            height: calc(100% - 10px);
+            background: #e2e8f0;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #a0aec0;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #4a5568;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Digital Sourcing & Partner Onboarding Portal</h1>
+            <p>Streamlined hospital onboarding with automated evaluation and contract management</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('application')">New Application</button>
+            <button class="tab" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="showTab('tracking')">Track Application</button>
+            <button class="tab" onclick="showTab('contracts')">Contracts</button>
+        </div>
+
+        <!-- Application Form Tab -->
+        <div id="application-tab" class="content-area">
+            <form id="applicationForm" enctype="multipart/form-data">
+                <!-- Hospital Information -->
+                <div class="form-section">
+                    <h2 class="form-title">Hospital Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Hospital Name *</label>
+                            <input type="text" class="form-control" name="hospital_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Registration Number *</label>
+                            <input type="text" class="form-control" name="registration_number" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Beds *</label>
+                            <input type="number" class="form-control" name="bed_count" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Years of Experience *</label>
+                            <input type="number" class="form-control" name="years_experience" min="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Details -->
+                <div class="form-section">
+                    <h2 class="form-title">Location Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Address *</label>
+                            <input type="text" class="form-control" name="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input type="text" class="form-control" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <input type="text" class="form-control" name="state" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location Description</label>
+                            <input type="text" class="form-control" name="location">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Owner Information -->
+                <div class="form-section">
+                    <h2 class="form-title">Owner Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Owner Name *</label>
+                            <input type="text" class="form-control" name="owner_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="owner_email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" name="owner_phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial & Quality Information -->
+                <div class="form-section">
+                    <h2 class="form-title">Financial & Quality Metrics</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Annual Revenue (NGN)</label>
+                            <input type="number" class="form-control" name="financial_revenue" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Profitability (%)</label>
+                            <input type="number" class="form-control" name="financial_profitability" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service Quality Score (0-25)</label>
+                            <input type="number" class="form-control" name="service_quality_score" min="0" max="25">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Infrastructure Quality</label>
+                            <select class="form-control" name="infrastructure_quality">
+                                <option value="excellent">Excellent</option>
+                                <option value="good">Good</option>
+                                <option value="average">Average</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specializations -->
+                <div class="form-section">
+                    <h2 class="form-title">Specializations</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Select Specializations</label>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <label><input type="checkbox" name="specializations" value="Cardiology"> Cardiology</label>
+                                <label><input type="checkbox" name="specializations" value="Orthopedics"> Orthopedics</label>
+                                <label><input type="checkbox" name="specializations" value="Pediatrics"> Pediatrics</label>
+                                <label><input type="checkbox" name="specializations" value="Obstetrics"> Obstetrics</label>
+                                <label><input type="checkbox" name="specializations" value="Surgery"> Surgery</label>
+                                <label><input type="checkbox" name="specializations" value="Emergency"> Emergency</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Compliance Certifications</label>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <label><input type="checkbox" name="compliance_certifications" value="ISO 9001"> ISO 9001</label>
+                                <label><input type="checkbox" name="compliance_certifications" value="NHIS"> NHIS Accredited</label>
+                                <label><input type="checkbox" name="compliance_certifications" value="HEFAMAA"> HEFAMAA</label>
+                                <label><input type="checkbox" name="compliance_certifications" value="State License"> State License</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Upload -->
+                <div class="form-section">
+                    <h2 class="form-title">Document Upload</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Hospital License *</label>
+                            <div class="file-upload">
+                                <input type="file" name="license" accept=".pdf,.jpg,.png" required>
+                                <label class="file-upload-label">
+                                    📄 Click to upload license (PDF/Image)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Certifications</label>
+                            <div class="file-upload">
+                                <input type="file" name="certification" accept=".pdf,.jpg,.png" multiple>
+                                <label class="file-upload-label">
+                                    📋 Upload certifications (Multiple allowed)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Financial Statements</label>
+                            <div class="file-upload">
+                                <input type="file" name="financial_statement" accept=".pdf" multiple>
+                                <label class="file-upload-label">
+                                    💰 Upload financial statements (PDF)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Facility Photos</label>
+                            <div class="file-upload">
+                                <input type="file" name="facility_photos" accept="image/*" multiple>
+                                <label class="file-upload-label">
+                                    📷 Upload facility photos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="content-area" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-pending">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-approved">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-contracts">0</div>
+                    <div class="stat-label">Contracts Signed</div>
+                </div>
+            </div>
+
+            <h3 style="margin: 30px 0 20px;">Recent Applications</h3>
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Hospital Name</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>Documents</th>
+                        <th>Contract</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-list">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <div class="loading"></div>
+                            <p>Loading applications...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tracking Tab -->
+        <div id="tracking-tab" class="content-area" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Enter Application ID</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" id="trackingId" placeholder="e.g., APP-12345678">
+                    <button class="btn btn-primary" onclick="trackApplication()">Track</button>
+                </div>
+            </div>
+
+            <div id="tracking-result" style="margin-top: 30px;"></div>
+        </div>
+
+        <!-- Contracts Tab -->
+        <div id="contracts-tab" class="content-area" style="display: none;">
+            <h3>Pending Contracts</h3>
+            <div id="contracts-list"></div>
+        </div>
+    </div>
+
+    <!-- Score Result Modal -->
+    <div id="scoreModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Application Evaluation Result</h2>
+            <div style="text-align: center; margin: 30px 0;">
+                <div class="score-display" id="totalScore">0/100</div>
+                <p id="scoreMessage" style="margin-top: 20px; font-size: 1.1rem;"></p>
+            </div>
+            <div class="evaluation-grid" id="evaluationDetails"></div>
+            <div id="contractSection" style="display: none; margin-top: 30px;">
+                <h3>Contract Generated</h3>
+                <p>Your application has been approved! A contract has been generated.</p>
+                <button class="btn btn-primary" onclick="signContract()">Proceed to Sign Contract</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8090/api';
+        let currentApplicationId = null;
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.content-area').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Load data if dashboard
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            } else if (tabName === 'contracts') {
+                loadContracts();
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const form = e.target;
+            
+            // Collect form data
+            const applicationData = {};
+            const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], select');
+            inputs.forEach(input => {
+                if (input.name && input.value) {
+                    applicationData[input.name] = input.value;
+                }
+            });
+            
+            // Collect checkboxes
+            const specializations = [];
+            form.querySelectorAll('input[name="specializations"]:checked').forEach(cb => {
+                specializations.push(cb.value);
+            });
+            applicationData.specializations = specializations;
+            
+            const certifications = [];
+            form.querySelectorAll('input[name="compliance_certifications"]:checked').forEach(cb => {
+                certifications.push(cb.value);
+            });
+            applicationData.compliance_certifications = certifications;
+            
+            formData.append('applicationData', JSON.stringify(applicationData));
+            
+            // Add files
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                if (input.files.length > 0) {
+                    for (let i = 0; i < input.files.length; i++) {
+                        formData.append(input.name, input.files[i]);
+                    }
+                }
+            });
+            
+            try {
+                const response = await fetch(`${API_URL}/applications/submit`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentApplicationId = result.applicationId;
+                    showScoreModal(result);
+                    form.reset();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error submitting application: ' + error.message);
+            }
+        });
+
+        function showScoreModal(result) {
+            document.getElementById('totalScore').textContent = `${result.score}/100`;
+            
+            let message = '';
+            if (result.score >= 70) {
+                message = '🎉 Congratulations! Your application has been approved!';
+                document.getElementById('contractSection').style.display = 'block';
+            } else if (result.score >= 50) {
+                message = '📋 Your application is under review.';
+            } else {
+                message = '❌ Unfortunately, your application does not meet our requirements at this time.';
+            }
+            
+            document.getElementById('scoreMessage').textContent = message;
+            
+            // Show evaluation details
+            let detailsHtml = '';
+            result.evaluationDetails.forEach(item => {
+                const percentage = Math.round((item.score / item.max) * 100);
+                detailsHtml += `
+                    <div class="evaluation-item">
+                        <div>${item.criterion}</div>
+                        <div class="evaluation-score">${item.score}/${item.max}</div>
+                        <div style="font-size: 12px; color: #718096;">${percentage}%</div>
+                    </div>
+                `;
+            });
+            document.getElementById('evaluationDetails').innerHTML = detailsHtml;
+            
+            document.getElementById('scoreModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('scoreModal').style.display = 'none';
+        }
+
+        async function loadDashboard() {
+            try {
+                // Load statistics
+                const statsResponse = await fetch(`${API_URL}/dashboard/stats`);
+                const stats = await statsResponse.json();
+                
+                document.getElementById('stat-total').textContent = stats.total || 0;
+                document.getElementById('stat-pending').textContent = stats.byStatus?.pending || 0;
+                document.getElementById('stat-approved').textContent = stats.byStatus?.approved || 0;
+                document.getElementById('stat-contracts').textContent = stats.contracts?.fully_signed || 0;
+                
+                // Load recent applications
+                const appsResponse = await fetch(`${API_URL}/applications/recent`);
+                const applications = await appsResponse.json();
+                
+                let html = '';
+                if (applications.length === 0) {
+                    html = '<tr><td colspan="7" style="text-align: center;">No applications yet</td></tr>';
+                } else {
+                    applications.forEach(app => {
+                        html += `
+                            <tr>
+                                <td>${app.application_id}</td>
+                                <td>${app.hospital_name}</td>
+                                <td>${app.score}/100</td>
+                                <td><span class="status-badge status-${app.status}">${app.status}</span></td>
+                                <td>${app.document_count || 0} files</td>
+                                <td>${app.contract_id || '-'}</td>
+                                <td>
+                                    <button class="btn btn-secondary" onclick="viewApplication('${app.application_id}')">View</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                document.getElementById('applications-list').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function trackApplication() {
+            const trackingId = document.getElementById('trackingId').value;
+            if (!trackingId) {
+                alert('Please enter an application ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/applications/${trackingId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const app = data.application;
+                    let html = `
+                        <div class="alert alert-success">
+                            <h3>Application Found</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div>
+                                <strong>Hospital:</strong> ${app.hospital_name}<br>
+                                <strong>Status:</strong> <span class="status-badge status-${app.status}">${app.status}</span><br>
+                                <strong>Score:</strong> ${app.score}/100<br>
+                                <strong>Applied:</strong> ${new Date(app.created_at).toLocaleDateString()}
+                            </div>
+                            <div>
+                                <strong>Documents:</strong> ${data.documents.length} uploaded<br>
+                                <strong>Contract:</strong> ${data.contract ? data.contract.contract_id : 'Not generated'}<br>
+                                <strong>Signature:</strong> ${data.contract ? data.contract.signature_status : '-'}
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 30px;">Activity Timeline</h4>
+                        <div class="timeline">
+                    `;
+                    
+                    data.activities.forEach(activity => {
+                        html += `
+                            <div class="timeline-item">
+                                <strong>${activity.activity_type.replace(/_/g, ' ').toUpperCase()}</strong><br>
+                                ${activity.description}<br>
+                                <small style="color: #718096;">${new Date(activity.created_at).toLocaleString()}</small>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    document.getElementById('tracking-result').innerHTML = html;
+                } else {
+                    document.getElementById('tracking-result').innerHTML = `
+                        <div class="alert alert-error">
+                            Application not found. Please check the ID and try again.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alert('Error tracking application: ' + error.message);
+            }
+        }
+
+        async function viewApplication(appId) {
+            document.getElementById('trackingId').value = appId;
+            showTab('tracking');
+            trackApplication();
+        }
+
+        async function signContract() {
+            if (!currentApplicationId) {
+                alert('No application ID found');
+                return;
+            }
+            
+            // In a real implementation, this would open a signature interface
+            alert('Contract signing interface would open here. For demo, contract is marked as signed.');
+            
+            // Simulate signing
+            try {
+                const response = await fetch(`${API_URL}/contracts/${currentApplicationId}/sign`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        signatureData: 'demo-signature-data',
+                        signerType: 'hospital',
+                        signerName: 'Hospital Representative',
+                        ipAddress: '127.0.0.1'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Contract signed successfully!');
+                    closeModal();
+                }
+            } catch (error) {
+                alert('Error signing contract: ' + error.message);
+            }
+        }
+
+        async function loadContracts() {
+            try {
+                const response = await fetch(`${API_URL}/applications/recent`);
+                const applications = await response.json();
+                
+                const contractApps = applications.filter(app => app.contract_id);
+                
+                let html = '';
+                if (contractApps.length === 0) {
+                    html = '<p>No contracts available</p>';
+                } else {
+                    contractApps.forEach(app => {
+                        const signStatus = app.signature_status === 'fully_signed' ? '✅ Fully Signed' :
+                                         app.signature_status === 'partially_signed' ? '⚠️ Partially Signed' :
+                                         '⏳ Pending Signature';
+                        
+                        html += `
+                            <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                                <h4>${app.hospital_name}</h4>
+                                <p>Contract ID: ${app.contract_id}</p>
+                                <p>Status: ${signStatus}</p>
+                                <button class="btn btn-primary" onclick="downloadContract('${app.contract_id}')">Download PDF</button>
+                                ${app.signature_status !== 'fully_signed' ? 
+                                    `<button class="btn btn-secondary" onclick="signContract('${app.contract_id}')">Sign Contract</button>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('contracts-list').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading contracts:', error);
+            }
+        }
+
+        function downloadContract(contractId) {
+            window.open(`${API_URL}/contracts/${contractId}/download`, '_blank');
+        }
+
+        // Update file upload labels
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                const fileCount = this.files.length;
+                if (fileCount > 0) {
+                    label.innerHTML = `✅ ${fileCount} file(s) selected`;
+                    label.style.borderColor = '#48bb78';
+                    label.style.background = '#f0fff4';
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Load dashboard on page load
+        window.addEventListener('load', () => {
+            // Check if backend is running
+            fetch(`${API_URL}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Digital Sourcing Portal connected');
+                    }
+                })
+                .catch(error => {
+                    console.error('Backend not accessible:', error);
+                });
+        });
+    </script>
+</body>
+</html>

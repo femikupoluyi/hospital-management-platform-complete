@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-10-01T11:03:21.775Z",
+  "results": {
+    "ownerCRM": false,
+    "patientCRM": false,
+    "appointments": false,
+    "communications": false,
+    "loyalty": false,
+    "campaigns": false
+  },
+  "successRate": "0%",
+  "externalURLs": {
+    "backend": "https://crm-backend-morphvm-mkofwuzh.http.cloud.morph.so",
+    "frontend": "https://crm-frontend-morphvm-mkofwuzh.http.cloud.morph.so"
+  }
+}

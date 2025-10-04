@@ -1,0 +1,143 @@
+{
+  "timestamp": "2025-10-01T10:12:58.911Z",
+  "summary": {
+    "total": 15,
+    "working": 4,
+    "notWorking": 11
+  },
+  "workingUrls": [
+    {
+      "name": "HMS Module",
+      "url": "https://hms-module-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "success": true,
+      "contentType": "text/html; charset=utf-8",
+      "isHtml": true,
+      "isJson": false,
+      "title": "Hospital Management System - GrandPro HMSO",
+      "bodySize": 14492
+    },
+    {
+      "name": "API Documentation",
+      "url": "https://api-documentation-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "success": true,
+      "contentType": "text/html; charset=utf-8",
+      "isHtml": true,
+      "isJson": false,
+      "title": "GrandPro HMSO API Documentation",
+      "bodySize": 11522
+    },
+    {
+      "name": "Partner Integration",
+      "url": "https://partner-integration-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "success": true,
+      "contentType": "text/html; charset=utf-8",
+      "isHtml": true,
+      "isJson": false,
+      "title": "Partner Integration Portal - GrandPro HMSO",
+      "bodySize": 28887
+    },
+    {
+      "name": "Unified Frontend",
+      "url": "https://unified-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "success": true,
+      "contentType": "text/html; charset=utf-8",
+      "isHtml": true,
+      "isJson": false,
+      "title": "GrandPro HMSO - Hospital Management Platform",
+      "bodySize": 22446
+    }
+  ],
+  "failedUrls": [
+    {
+      "name": "Hospital App",
+      "url": "https://hospital-app-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Hospital Backend",
+      "url": "https://hospital-backend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "OCC Dashboard",
+      "url": "https://occ-dashboard-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 0,
+      "success": false,
+      "error": "Timeout"
+    },
+    {
+      "name": "OCC Enhanced",
+      "url": "https://occ-enhanced-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Analytics ML",
+      "url": "https://analytics-ml-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Analytics API",
+      "url": "https://analytics-api-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Main Frontend",
+      "url": "https://main-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "API Docs",
+      "url": "https://api-docs-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "CRM System",
+      "url": "https://crm-system-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Backend API",
+      "url": "https://backend-api-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    },
+    {
+      "name": "Onboarding App",
+      "url": "https://onboarding-app-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 404,
+      "success": false,
+      "title": "",
+      "bodySize": 0
+    }
+  ]
+}

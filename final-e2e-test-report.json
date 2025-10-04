@@ -1,0 +1,85 @@
+{
+  "urlTests": [
+    {
+      "module": "unified",
+      "url": "https://unified-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    },
+    {
+      "module": "crm",
+      "url": "https://crm-frontend-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    },
+    {
+      "module": "hms",
+      "url": "https://hms-module-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    },
+    {
+      "module": "occ",
+      "url": "https://occ-command-centre-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    },
+    {
+      "module": "partner",
+      "url": "https://partner-integration-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    },
+    {
+      "module": "sourcing",
+      "url": "https://digital-sourcing-morphvm-mkofwuzh.http.cloud.morph.so",
+      "status": 200,
+      "contentValid": true,
+      "passed": true
+    }
+  ],
+  "userJourney": {
+    "hospitalApplication": false,
+    "patientRegistration": false,
+    "appointmentScheduling": false,
+    "billingProcess": false,
+    "inventoryUpdate": false,
+    "analyticsGeneration": false
+  },
+  "integration": {
+    "crmToHMS": true,
+    "hmsToInventory": true,
+    "inventoryToPartner": true,
+    "partnerToAnalytics": true,
+    "analyticsToOCC": true
+  },
+  "performance": {
+    "pageLoadTime": {
+      "unified": 60,
+      "crm": 43,
+      "hms": 46,
+      "occ": 43,
+      "partner": 45,
+      "sourcing": 47
+    },
+    "apiResponseTime": {
+      "Hospital Backend": 3,
+      "CRM Backend": 4,
+      "HMS Module": 3
+    },
+    "databaseQueryTime": 30,
+    "concurrentUsers": 10
+  },
+  "security": {
+    "httpsEnforced": true,
+    "rbacActive": true,
+    "auditLogging": true,
+    "encryptionActive": true,
+    "sessionManagement": true
+  }
+}

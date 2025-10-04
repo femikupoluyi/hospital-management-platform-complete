@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System - GrandPro HMSO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .stat-card h3 {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .value {
+            color: #2d3748;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .subtext {
+            color: #a0aec0;
+            font-size: 13px;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .module-card .icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .module-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .module-card p {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .table-container h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f7fafc;
+            color: #4a5568;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-available {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-occupied {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .status-active {
+            background: #bee3f8;
+            color: #2a4e7c;
+        }
+        
+        .alert {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .alert h4 {
+            color: #742a2a;
+            margin-bottom: 5px;
+        }
+        
+        .alert p {
+            color: #c53030;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Hospital Management System</h1>
+            <p>Comprehensive healthcare management platform - GrandPro HMSO</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Beds</h3>
+                <div class="value">300</div>
+                <div class="subtext">Across 5 wards</div>
+            </div>
+            <div class="stat-card">
+                <h3>Occupancy Rate</h3>
+                <div class="value">75.5%</div>
+                <div class="subtext">226 beds occupied</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Staff</h3>
+                <div class="value">165</div>
+                <div class="subtext">45 doctors, 120 nurses</div>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Revenue</h3>
+                <div class="value">GH₵ 12,450</div>
+                <div class="subtext">42 pending bills</div>
+            </div>
+        </div>
+        
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="icon">📋</div>
+                <h3>Electronic Medical Records</h3>
+                <p>Complete patient medical history, diagnoses, prescriptions, and lab results management.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">New Record</button>
+                    <button class="btn btn-secondary">View Records</button>
+                </div>
+            </div>
+            
+            <div class="module-card">
+                <div class="icon">💰</div>
+                <h3>Billing & Revenue</h3>
+                <p>Invoice generation, payment processing, insurance claims, and revenue tracking.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">Create Invoice</button>
+                    <button class="btn btn-secondary">View Invoices</button>
+                </div>
+            </div>
+            
+            <div class="module-card">
+                <div class="icon">📦</div>
+                <h3>Inventory Management</h3>
+                <p>Track medications, medical supplies, equipment with automatic reorder alerts.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">Stock Entry</button>
+                    <button class="btn btn-secondary">Low Stock Alert</button>
+                </div>
+            </div>
+            
+            <div class="module-card">
+                <div class="icon">👥</div>
+                <h3>Staff Management</h3>
+                <p>Staff scheduling, attendance tracking, payroll processing, and performance metrics.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">Add Schedule</button>
+                    <button class="btn btn-secondary">View Roster</button>
+                </div>
+            </div>
+            
+            <div class="module-card">
+                <div class="icon">🛏️</div>
+                <h3>Bed Management</h3>
+                <p>Real-time bed availability, admissions, discharges, and ward occupancy tracking.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">New Admission</button>
+                    <button class="btn btn-secondary">Available Beds</button>
+                </div>
+            </div>
+            
+            <div class="module-card">
+                <div class="icon">📊</div>
+                <h3>Analytics Dashboard</h3>
+                <p>Real-time metrics, occupancy trends, revenue analytics, and performance KPIs.</p>
+                <div class="actions">
+                    <button class="btn btn-primary">View Dashboard</button>
+                    <button class="btn btn-secondary">Export Report</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert">
+            <h4>⚠️ Low Stock Alert</h4>
+            <p>5 items below reorder point. Paracetamol, Surgical Gloves, and 3 other items need restocking.</p>
+        </div>
+        
+        <div class="table-container">
+            <h2>Recent Admissions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Patient Name</th>
+                        <th>Ward</th>
+                        <th>Bed</th>
+                        <th>Admission Date</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PT-001</td>
+                        <td>Kwame Asante</td>
+                        <td>General Ward A</td>
+                        <td>GEN-001</td>
+                        <td>2025-09-30</td>
+                        <td>Dr. John Mensah</td>
+                        <td><span class="status-badge status-active">Admitted</span></td>
+                    </tr>
+                    <tr>
+                        <td>PT-002</td>
+                        <td>Ama Boateng</td>
+                        <td>Maternity Ward</td>
+                        <td>MAT-003</td>
+                        <td>2025-09-30</td>
+                        <td>Dr. Akua Asante</td>
+                        <td><span class="status-badge status-active">Admitted</span></td>
+                    </tr>
+                    <tr>
+                        <td>PT-003</td>
+                        <td>Kofi Mensah</td>
+                        <td>ICU</td>
+                        <td>ICU-002</td>
+                        <td>2025-09-29</td>
+                        <td>Dr. Kofi Appiah</td>
+                        <td><span class="status-badge status-active">Critical</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="table-container">
+            <h2>Staff on Duty</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Staff ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Position</th>
+                        <th>Shift</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>STF-001</td>
+                        <td>Dr. John Mensah</td>
+                        <td>Medicine</td>
+                        <td>Senior Physician</td>
+                        <td>08:00 - 16:00</td>
+                        <td><span class="status-badge status-active">On Duty</span></td>
+                    </tr>
+                    <tr>
+                        <td>STF-003</td>
+                        <td>Nurse Mary Owusu</td>
+                        <td>Nursing</td>
+                        <td>Head Nurse</td>
+                        <td>08:00 - 20:00</td>
+                        <td><span class="status-badge status-active">On Duty</span></td>
+                    </tr>
+                    <tr>
+                        <td>STF-004</td>
+                        <td>Dr. Kofi Appiah</td>
+                        <td>Emergency</td>
+                        <td>Emergency Physician</td>
+                        <td>12:00 - 00:00</td>
+                        <td><span class="status-badge status-active">On Duty</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactivity
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('h3').textContent;
+                console.log(`Clicked on: ${title}`);
+            });
+        });
+        
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log(`Button clicked: ${this.textContent}`);
+            });
+        });
+    </script>
+</body>
+</html>
